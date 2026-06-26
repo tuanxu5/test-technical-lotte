@@ -1,4 +1,4 @@
-import React from 'react';
+import { memo } from 'react';
 import { AlertTriangle } from 'lucide-react';
 import { Modal } from './ui/Card';
 import { Button } from './ui/Button';
@@ -12,7 +12,7 @@ interface ConfirmDialogProps {
   loading?: boolean;
 }
 
-export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
+export const ConfirmDialog = memo<ConfirmDialogProps>(({
   isOpen,
   onClose,
   onConfirm,
@@ -52,4 +52,4 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
       </div>
     </Modal>
   );
-};
+});

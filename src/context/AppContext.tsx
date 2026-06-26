@@ -1,5 +1,5 @@
 /* eslint-disable react-refresh/only-export-components */
-import React, { createContext, useContext, useState, useCallback, type ReactNode } from 'react';
+import React, { createContext, useContext, useState, useCallback, useMemo, type ReactNode } from 'react';
 import { USER_ROLE } from '../types';
 import { mockApi } from '../services/mockApi';
 
@@ -169,25 +169,40 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     refreshList();
   }, [showToast, refreshList, lang]);
 
+  const contextValue = useMemo(() => ({
+    userRole,
+    currentUser,
+    setRole,
+    toasts,
+    showToast,
+    dismissToast,
+    triggerRefresh,
+    refreshList,
+    resetDatabase,
+    lang,
+    setLang,
+    t,
+    isSidebarOpen,
+    setSidebarOpen,
+  }), [
+    userRole,
+    currentUser,
+    setRole,
+    toasts,
+    showToast,
+    dismissToast,
+    triggerRefresh,
+    refreshList,
+    resetDatabase,
+    lang,
+    setLang,
+    t,
+    isSidebarOpen,
+    setSidebarOpen,
+  ]);
+
   return (
-    <AppContext.Provider
-      value={{
-        userRole,
-        currentUser,
-        setRole,
-        toasts,
-        showToast,
-        dismissToast,
-        triggerRefresh,
-        refreshList,
-        resetDatabase,
-        lang,
-        setLang,
-        t,
-        isSidebarOpen,
-        setSidebarOpen,
-      }}
-    >
+    <AppContext.Provider value={contextValue}>
       {children}
     </AppContext.Provider>
   );

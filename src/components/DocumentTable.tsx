@@ -1,5 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useState } from 'react';
+import { useState, memo } from 'react';
 import { DOCUMENT_CATEGORY, DOCUMENT_STATUS, USER_ROLE } from '../types';
 import type { Document } from '../types';
 import { useApp } from '../context/AppContext';
@@ -20,7 +19,7 @@ interface DocumentTableProps {
   onDeleteClick: (doc: Document) => void;
 }
 
-export const DocumentTable: React.FC<DocumentTableProps> = ({
+export const DocumentTable = memo<DocumentTableProps>(({
   documents,
   loading,
   totalRecords,
@@ -121,10 +120,11 @@ export const DocumentTable: React.FC<DocumentTableProps> = ({
     try {
       await onEditSave(id, editData);
       setEditingId(null);
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const errorMsg = err instanceof Error ? err.message : 'Validation failed';
       setEditErrors((prev) => ({
         ...prev,
-        code: err.message || 'Validation failed',
+        code: errorMsg,
       }));
     } finally {
       setIsSaving(false);
@@ -258,15 +258,15 @@ export const DocumentTable: React.FC<DocumentTableProps> = ({
                       {isCurrentRowEditing ? (
                         <div className="cell-input-container">
                           <select
-                            value={editData.category ?? DOCUMENT_CATEGORY.Contract}
+                            value={editData.category ?? DOCUMENT_CATEGORY.CONTRACT}
                             onChange={(e) => handleCellChange('category', e.target.value)}
                             className={`cell-select ${isDirty('category', doc.category) ? 'cell-changed' : ''
                               }`}
                           >
-                            <option value={DOCUMENT_CATEGORY.Contract}>Contract</option>
-                            <option value={DOCUMENT_CATEGORY.Report}>Report</option>
-                            <option value={DOCUMENT_CATEGORY.Invoice}>Invoice</option>
-                            <option value={DOCUMENT_CATEGORY.Technical}>Technical</option>
+                            <option value={DOCUMENT_CATEGORY.CONTRACT}>Contract</option>
+                            <option value={DOCUMENT_CATEGORY.REPORT}>Report</option>
+                            <option value={DOCUMENT_CATEGORY.INVOICE}>Invoice</option>
+                            <option value={DOCUMENT_CATEGORY.TECHNICAL}>Technical</option>
                           </select>
                           {isDirty('category', doc.category) && (
                             <span className="dirty-indicator" title="Unsaved changes" />
@@ -282,15 +282,15 @@ export const DocumentTable: React.FC<DocumentTableProps> = ({
                       {isCurrentRowEditing ? (
                         <div className="cell-input-container">
                           <select
-                            value={editData.status ?? DOCUMENT_STATUS.Draft}
+                            value={editData.status ?? DOCUMENT_STATUS.DRAFT}
                             onChange={(e) => handleCellChange('status', e.target.value)}
                             className={`cell-select ${isDirty('status', doc.status) ? 'cell-changed' : ''
                               }`}
                           >
-                            <option value={DOCUMENT_STATUS.Draft}>Draft</option>
-                            <option value={DOCUMENT_STATUS.Pending}>Pending</option>
-                            <option value={DOCUMENT_STATUS.Approved}>Approved</option>
-                            <option value={DOCUMENT_STATUS.Rejected}>Rejected</option>
+                            <option value={DOCUMENT_STATUS.DRAFT}>Draft</option>
+                            <option value={DOCUMENT_STATUS.PENDING}>Pending</option>
+                            <option value={DOCUMENT_STATUS.APPROVED}>Approved</option>
+                            <option value={DOCUMENT_STATUS.REJECTED}>Rejected</option>
                           </select>
                           {isDirty('status', doc.status) && (
                             <span className="dirty-indicator" title="Unsaved changes" />
@@ -380,4 +380,4 @@ export const DocumentTable: React.FC<DocumentTableProps> = ({
       )}
     </div>
   );
-};
+});

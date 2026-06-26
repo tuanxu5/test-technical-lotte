@@ -1,4 +1,4 @@
-import React from 'react';
+import { memo } from 'react';
 import { useApp } from '../context/AppContext';
 import { DOCUMENT_CATEGORY, DOCUMENT_STATUS } from '../types';
 import { Search, X, Plus, Upload } from 'lucide-react';
@@ -16,7 +16,7 @@ interface ToolbarProps {
   onImportClick: () => void;
 }
 
-export const Toolbar: React.FC<ToolbarProps> = ({
+export const Toolbar = memo<ToolbarProps>(({
   onSearchChange,
   onCategoryChange,
   onStatusChange,
@@ -117,4 +117,4 @@ export const Toolbar: React.FC<ToolbarProps> = ({
       </div>
     </div>
   );
-};
+});

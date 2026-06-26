@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useState, useRef } from 'react';
+import { useState, useRef, memo } from 'react';
 import { useApp } from '../context/AppContext';
 import { mockApi } from '../services/mockApi';
 import { DOCUMENT_CATEGORY, DOCUMENT_STATUS } from '../types';
@@ -16,7 +16,7 @@ interface BulkImportModalProps {
   onImportSuccess: () => void;
 }
 
-export const BulkImportModal: React.FC<BulkImportModalProps> = ({
+export const BulkImportModal = memo<BulkImportModalProps>(({
   isOpen,
   onClose,
   onImportSuccess,
@@ -513,4 +513,4 @@ export const BulkImportModal: React.FC<BulkImportModalProps> = ({
       </div>
     </Modal>
   );
-};
+});

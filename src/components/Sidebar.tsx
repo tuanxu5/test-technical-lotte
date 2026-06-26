@@ -1,10 +1,10 @@
-import React from 'react';
+import { memo } from 'react';
 import { useApp } from '../context/AppContext';
 import { FileText, Shield, Database, ChevronDown, RotateCcw, X } from 'lucide-react';
 import { SegmentedControl } from './ui/Toggle';
 import { USER_ROLE } from '../types';
 
-export const Sidebar: React.FC = () => {
+export const Sidebar = memo(() => {
   const { userRole, setRole, resetDatabase, isSidebarOpen, setSidebarOpen, currentUser, t } = useApp();
 
   return (
@@ -98,4 +98,4 @@ export const Sidebar: React.FC = () => {
       </aside>
     </>
   );
-};
+});

@@ -1,11 +1,11 @@
-import React from 'react';
+import { memo } from 'react';
 import { useApp } from '../context/AppContext';
 import type { LangType } from '../context/AppContext';
 import { Globe, Menu } from 'lucide-react';
 import { RoleBadge } from './ui/Badge';
 import { SegmentedControl } from './ui/Toggle';
 
-export const Header: React.FC = () => {
+export const Header = memo(() => {
   const { currentUser, userRole, lang, setLang, t, setSidebarOpen } = useApp();
 
   return (
@@ -55,4 +55,4 @@ export const Header: React.FC = () => {
       </div>
     </header>
   );
-};
+});

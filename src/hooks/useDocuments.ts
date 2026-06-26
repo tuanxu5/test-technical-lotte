@@ -102,21 +102,21 @@ export function useDocuments() {
   }, []);
 
   // Add Document handler
-  const handleSaveDocument = async (docPayload: Omit<Document, 'id' | 'createdDate'>) => {
+  const handleSaveDocument = useCallback(async (docPayload: Omit<Document, 'id' | 'createdDate'>) => {
     await mockApi.createDocument(docPayload);
     showToast(t('addSuccess'), 'success');
     refreshList();
-  };
+  }, [showToast, refreshList, t]);
 
   // Inline Edit Save handler
-  const handleInlineSave = async (id: string, updatedFields: Partial<Document>) => {
+  const handleInlineSave = useCallback(async (id: string, updatedFields: Partial<Document>) => {
     await mockApi.updateDocument(id, updatedFields);
     showToast(t('editSuccess'), 'success');
     refreshList();
-  };
+  }, [showToast, refreshList, t]);
 
   // Delete handler
-  const handleDeleteConfirm = async () => {
+  const handleDeleteConfirm = useCallback(async () => {
     if (!documentToDelete) return;
     setIsDeleting(true);
     try {
@@ -134,7 +134,7 @@ export function useDocuments() {
     } finally {
       setIsDeleting(false);
     }
-  };
+  }, [documentToDelete, documents.length, currentPage, showToast, refreshList, t]);
 
   return {
     search,

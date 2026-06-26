@@ -1,4 +1,4 @@
-import React from 'react';
+import { memo } from 'react';
 import { useApp } from '../context/AppContext';
 import { StatCard } from './ui/Card';
 
@@ -9,7 +9,7 @@ interface StatsProps {
   categoriesCount: number;
 }
 
-export const StatsBanner: React.FC<StatsProps> = ({ total, pending, approved, categoriesCount }) => {
+export const StatsBanner = memo<StatsProps>(({ total, pending, approved, categoriesCount }) => {
   const { t } = useApp();
 
   const approvedRate = total > 0 ? Math.round((approved / total) * 100) : 0;
@@ -29,4 +29,4 @@ export const StatsBanner: React.FC<StatsProps> = ({ total, pending, approved, ca
       <StatCard value={categoriesCount} label={t('activeCats')} indicatorClass="indicator-purple" />
     </div>
   );
-};
+});

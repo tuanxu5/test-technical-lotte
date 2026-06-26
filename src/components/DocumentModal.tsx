@@ -1,5 +1,5 @@
-/* eslint-disable @typescript-eslint/no-explicit-any, react-hooks/set-state-in-effect */
-import React, { useState, useEffect } from 'react';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { useState, useEffect, memo } from 'react';
 import { DOCUMENT_CATEGORY, DOCUMENT_STATUS } from '../types';
 import type { Document } from '../types';
 import { useApp } from '../context/AppContext';
@@ -16,7 +16,7 @@ interface DocumentModalProps {
   documentToEdit?: Document | null;
 }
 
-export const DocumentModal: React.FC<DocumentModalProps> = ({
+export const DocumentModal = memo<DocumentModalProps>(({
   isOpen,
   onClose,
   onSave,
@@ -205,4 +205,4 @@ export const DocumentModal: React.FC<DocumentModalProps> = ({
       </form>
     </Modal>
   );
-};
+});

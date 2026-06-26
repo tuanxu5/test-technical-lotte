@@ -35,7 +35,7 @@ npm run lint
 
 ## 🎨 Giao diện & Trải nghiệm Người dùng (UI/UX)
 - **Thiết kế Premium**: Tông màu phối hợp hài hòa giữa màu Đỏ thương hiệu LOTTE (`#e30613`) và Xanh CMC Global (`#0054a6`) trên nền xám Slate cao cấp. Hỗ trợ hiển thị tương thích **Dark Mode** tự động theo cấu hình hệ thống máy chủ của người dùng.
-- **Typography & Spacing**: Độ cao hàng (Row height) 68px thoải mái, font chữ Inter hiện đại, dễ đọc, cấu trúc phân cấp rõ ràng.
+- **Typography & Spacing**: Độ cao hàng (Row height) 80px thoáng đãng, font chữ Inter hiện đại, dễ đọc, cấu trúc phân cấp rõ ràng.
 - **Trạng thái Trực quan**: Hỗ trợ đầy đủ các trạng thái Loading (Spinner xoay mượt mà), Empty state sinh động, Alert báo lỗi và Toast tự động ẩn sau 4 giây.
 
 ---
@@ -46,21 +46,24 @@ npm run lint
 src/
 ├── assets/             # Logo và các tệp tĩnh mặc định của Vite
 ├── components/         # Các UI component có khả năng tái sử dụng cao
+│   ├── ui/             # Các thư viện UI cơ bản (Button, Input, Select, Card, Toggle, Table, Badge, Pagination)
 │   ├── BulkImportModal.tsx   # Panel upload và xử lý file CSV lớn
 │   ├── ConfirmDialog.tsx     # Hộp thoại xác nhận xóa tài liệu EVD
 │   ├── DocumentModal.tsx     # Form thêm/sửa tài liệu EVD
 │   ├── DocumentTable.tsx     # Bảng tài liệu, phân trang và chỉnh sửa inline
 │   ├── Header.tsx            # Metadata hệ thống và chuyển đổi ngôn ngữ
-│   ├── Icons.tsx             # Bộ sưu tập các SVG Icons tự thiết kế
 │   ├── Sidebar.tsx           # Sidebar thương hiệu và bảng phân quyền Demo
 │   ├── StatsBanner.tsx       # 4 thẻ thống kê số liệu tổng quan (KPIs)
 │   └── VirtualTable.tsx      # Bộ ảo hóa viewport (virtualization) cho dữ liệu lớn
 ├── context/
 │   └── AppContext.tsx  # Quản lý Global State (Role, Toast, Đa ngôn ngữ i18n)
+├── hooks/
+│   ├── useDebounce.ts  # Custom Hook tối ưu hiệu năng nhập liệu (Debouncing)
+│   └── useDocuments.ts # Tách biệt nghiệp vụ CRUD, phân trang và tìm kiếm khỏi View
 ├── services/
 │   └── mockApi.ts      # Giả lập REST API Client (CRUD, Search, Sort, Delay 400ms)
 ├── types/
-│   └── index.ts        # Định nghĩa các TypeScript interfaces toàn dự án
+│   └── index.ts        # Định nghĩa các TypeScript interfaces và Enums toàn dự án
 ├── index.css           # Design system tokens và vanilla CSS của hệ thống SYS
 └── main.tsx            # Điểm khởi chạy của ứng dụng
 ```
@@ -69,23 +72,38 @@ src/
 
 ## 🌟 Điểm nhấn Kỹ thuật Nổi bật
 
-### 1. Chỉnh sửa Trực tiếp trên Bảng (Inline Cell Editing & Dirty Tracking)
-- Kích hoạt bằng cách **Double-click vào một dòng** hoặc bấm nút **Edit (Bút chì)** ở cột hành động.
-- **Dirty Tracking**: Khi người dùng thay đổi giá trị trong các ô nhập (`code`, `title`, `category`, `status`), hệ thống sẽ kích hoạt tính năng theo dõi thay đổi và hiển thị một **chấm tròn cam nhỏ** ở góc phải của ô để biểu thị giá trị chưa được lưu.
-- **Cell Validation**: Kiểm tra dữ liệu ngay khi người dùng nhập. Nếu ô vi phạm ràng buộc (ví dụ: Code trống hoặc chứa ký tự đặc biệt, Title ngắn hơn 5 ký tự), ô sẽ chuyển viền đỏ và hiển thị **tooltip cảnh báo tuyệt đối (absolute positioned tooltip)** ngay bên dưới ô nhập mà **không làm đẩy dòng hay vỡ giao diện bảng**.
+### 1. Phân tách Nghiệp vụ (Business Logic Extraction)
+- **Custom Hook `useDocuments`**: Toàn bộ trạng thái dữ liệu (CRUD, pagination, debounce search, modals trigger, v.v.) được bóc tách hoàn toàn khỏi các file components của View và gói gọn trong hook tùy chỉnh [useDocuments.ts](file:///Users/uyntun/test-technical-lotte/src/hooks/useDocuments.ts). Điều này giúp View sạch sẽ, dễ bảo trì và tạo điều kiện viết Unit Tests cực kỳ thuận lợi.
 
-### 2. Nhập Hàng loạt Không nghẽn Giao diện (Non-blocking Bulk Import CSV)
+### 2. Tối ưu hiệu năng & Tránh Re-render thừa (Performance Optimizations)
+- **Tối ưu Context Provider**: Giá trị truyền vào `AppContext.Provider` được bọc trong `useMemo` tại [AppContext.tsx](file:///Users/uyntun/test-technical-lotte/src/context/AppContext.tsx) giúp ngăn chặn việc re-render toàn bộ các components con mỗi khi Context cha render lại.
+- **Callback Stability (`useCallback`)**: Tất cả các hàm xử lý sự kiện trong hook `useDocuments` (như `handlePageChange`, `handleInlineSave`, `handleDeleteConfirm`...) đều được bọc trong `useCallback` với danh sách dependencies tối thiểu để giữ nguyên reference.
+- **Component Memoization (`React.memo`)**: Các components cấu trúc lớn như `DocumentTable`, `Toolbar`, `Sidebar`, `Header`, `StatsBanner`, `DocumentModal`, `ConfirmDialog` được bọc trong `React.memo`. Kết hợp với callback ổn định từ bước trên, khi người dùng nhập liệu tìm kiếm, **chỉ có ô input ở Toolbar re-render trực tiếp**, các phần khác của hệ thống hoàn toàn bỏ qua việc tính toán lại DOM giúp trải nghiệm gõ phím cực kỳ mượt mà (60fps).
+
+### 3. Custom Debounce Hook (`useDebounce`)
+- Xây dựng riêng [useDebounce.ts](file:///Users/uyntun/test-technical-lotte/src/hooks/useDebounce.ts) để trì hoãn việc gọi API truy vấn tài liệu trong khi người dùng đang nhập. Khi người dùng ngừng gõ sau `300ms`, truy vấn mới được kích hoạt, giảm thiểu đáng kể số lượng request giả lập (chứa độ trễ 400ms).
+
+### 4. Thay thế Enum Mạnh mẽ (TypeScript Strongly-Typed Enums)
+- Thay thế hoàn toàn các kiểu dữ liệu chuỗi rời rạc trước đây bằng các TypeScript Enums chuẩn hóa: `DOCUMENT_CATEGORY`, `DOCUMENT_STATUS`, và `USER_ROLE` tại [types/index.ts](file:///Users/uyntun/test-technical-lotte/src/types/index.ts).
+- Cấu hình `"erasableSyntaxOnly": false` trong `tsconfig.app.json` để tương thích hoàn hảo với quá trình transpilation của Vite mà vẫn đảm bảo tính an toàn dữ liệu đầu vào.
+
+### 5. Nhập Hàng loạt Không nghẽn Giao diện (Non-blocking Bulk Import CSV)
 - Cho phép upload tệp CSV chứa hàng ngàn bản ghi. Hệ thống cung cấp sẵn nút tải **CSV Template mẫu** và tệp **giả lập 5.000 dòng dữ liệu** để kiểm thử.
-- **Xử lý theo Chunk**: Thay vì duyệt toàn bộ tệp tin trong một luồng đồng bộ gây đơ trình duyệt, ứng dụng phân tách dữ liệu thành từng **chunk 500 bản ghi** và xử lý bất đồng bộ thông qua `setTimeout(..., 0)` / `requestAnimationFrame` giúp trả lại quyền điều khiển cho UI thread. Nhờ đó, thanh tiến trình (progress bar) và spinner vẫn cập nhật mượt mà.
+- **Xử lý theo Chunk**: Thay vì duyệt toàn bộ tệp tin trong một luồng đồng bộ gây đơ trình duyệt, ứng dụng phân tách dữ liệu thành từng **chunk 500 bản ghi** và xử lý bất đồng bộ thông qua `setTimeout(..., 0)` giúp trả lại quyền điều khiển cho UI thread. Nhờ đó, thanh tiến trình (progress bar) và spinner vẫn cập nhật mượt mà.
 - **Báo cáo Lỗi & Xem trước Ảo hóa (Virtualized Preview)**:
   - Thống kê chi tiết: Tổng số dòng, Số dòng hợp lệ, Số dòng lỗi.
   - Tab lỗi liệt kê cụ thể các dòng vi phạm kèm chi tiết lỗi (ví dụ: `Trùng code hệ thống`, `Thiếu tiêu đề`).
   - Tab xem trước sử dụng **VirtualTable (Row Virtualization / Windowing)** tự thiết kế. Chỉ render các dòng xuất hiện trong viewport scroll container, đảm bảo tải 5.000 dòng cực kỳ mượt mà mà không lo quá tải DOM.
 
-### 3. Hệ thống Phân quyền (Permission-based UI)
+### 6. Chỉnh sửa Trực tiếp trên Bảng (Inline Cell Editing & Dirty Tracking)
+- Kích hoạt bằng cách **Double-click vào một dòng** hoặc bấm nút **Edit (Bút chì)** ở cột hành động.
+- **Dirty Tracking**: Khi người dùng thay đổi giá trị trong các ô nhập (`code`, `title`, `category`, `status`), hệ thống sẽ kích hoạt tính năng theo dõi thay đổi và hiển thị một **chấm tròn cam nhỏ** ở góc phải của ô để biểu thị giá trị chưa được lưu.
+- **Cell Validation**: Kiểm tra dữ liệu ngay khi người dùng nhập. Nếu ô vi phạm ràng buộc (ví dụ: Code trống hoặc chứa ký tự đặc biệt, Title ngắn hơn 5 ký tự), ô sẽ chuyển viền đỏ và hiển thị **tooltip cảnh báo tuyệt đối (absolute positioned tooltip)** ngay bên dưới ô nhập mà **không làm đẩy dòng hay vỡ giao diện bảng**.
+
+### 7. Hệ thống Phân quyền (Permission-based UI)
 - Có thể chuyển đổi qua lại giữa 2 Role ngay tại góc dưới của Sidebar:
   - **ADMIN**: Quyền hạn tối cao, xem toàn bộ tài liệu hệ thống, thực hiện CRUD đầy đủ (thêm, sửa, xóa, nhập csv).
   - **STAFF**: Bị giới hạn phạm vi. Hệ thống **tự động ẩn các nút Xóa (Delete)** và chỉ lọc hiển thị các tài liệu do chính Staff Member tạo ra (dựa trên trường `createdBy === 'Staff Member'`).
 
-### 4. Đa ngôn ngữ Tiếng Anh / Tiếng Việt (Lightweight i18n)
-- Hỗ trợ nút chuyển đổi nhanh giữa `EN` và `VI` tại thanh Header điều khiển, tự động biên dịch toàn bộ nhãn biểu mẫu, bảng, trạng thái và cảnh báo của hệ thống.
+### 8. Đa ngôn ngữ Tiếng Anh / Tiếng Việt (Lightweight i18n)
+- Hỗ trợ nút chuyển đổi nhanh giữa `EN` và `VI` tại thanh Header điều khiển, tự động dịch toàn bộ nhãn biểu mẫu, bảng, trạng thái và cảnh báo của hệ thống.
