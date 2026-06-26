@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState } from 'react';
+import { DOCUMENT_CATEGORY, DOCUMENT_STATUS, USER_ROLE } from '../types';
 import type { Document } from '../types';
 import { useApp } from '../context/AppContext';
 import { Check, X, Edit2, Trash2, FileText, AlertCircle } from 'lucide-react';
@@ -206,9 +207,8 @@ export const DocumentTable: React.FC<DocumentTableProps> = ({
                             type="text"
                             value={editData.code ?? ''}
                             onChange={(e) => handleCellChange('code', e.target.value)}
-                            className={`cell-input ${editErrors.code ? 'cell-invalid' : ''} ${
-                              isDirty('code', doc.code) ? 'cell-changed' : ''
-                            }`}
+                            className={`cell-input ${editErrors.code ? 'cell-invalid' : ''} ${isDirty('code', doc.code) ? 'cell-changed' : ''
+                              }`}
                           />
                           {isDirty('code', doc.code) && !editErrors.code && (
                             <span className="dirty-indicator" title="Unsaved changes" />
@@ -233,9 +233,8 @@ export const DocumentTable: React.FC<DocumentTableProps> = ({
                             type="text"
                             value={editData.title ?? ''}
                             onChange={(e) => handleCellChange('title', e.target.value)}
-                            className={`cell-input ${editErrors.title ? 'cell-invalid' : ''} ${
-                              isDirty('title', doc.title) ? 'cell-changed' : ''
-                            }`}
+                            className={`cell-input ${editErrors.title ? 'cell-invalid' : ''} ${isDirty('title', doc.title) ? 'cell-changed' : ''
+                              }`}
                           />
                           {isDirty('title', doc.title) && !editErrors.title && (
                             <span className="dirty-indicator" title="Unsaved changes" />
@@ -259,16 +258,15 @@ export const DocumentTable: React.FC<DocumentTableProps> = ({
                       {isCurrentRowEditing ? (
                         <div className="cell-input-container">
                           <select
-                            value={editData.category ?? 'Contract'}
+                            value={editData.category ?? DOCUMENT_CATEGORY.Contract}
                             onChange={(e) => handleCellChange('category', e.target.value)}
-                            className={`cell-select ${
-                              isDirty('category', doc.category) ? 'cell-changed' : ''
-                            }`}
+                            className={`cell-select ${isDirty('category', doc.category) ? 'cell-changed' : ''
+                              }`}
                           >
-                            <option value="Contract">Contract</option>
-                            <option value="Report">Report</option>
-                            <option value="Invoice">Invoice</option>
-                            <option value="Technical">Technical</option>
+                            <option value={DOCUMENT_CATEGORY.Contract}>Contract</option>
+                            <option value={DOCUMENT_CATEGORY.Report}>Report</option>
+                            <option value={DOCUMENT_CATEGORY.Invoice}>Invoice</option>
+                            <option value={DOCUMENT_CATEGORY.Technical}>Technical</option>
                           </select>
                           {isDirty('category', doc.category) && (
                             <span className="dirty-indicator" title="Unsaved changes" />
@@ -284,16 +282,15 @@ export const DocumentTable: React.FC<DocumentTableProps> = ({
                       {isCurrentRowEditing ? (
                         <div className="cell-input-container">
                           <select
-                            value={editData.status ?? 'Draft'}
+                            value={editData.status ?? DOCUMENT_STATUS.Draft}
                             onChange={(e) => handleCellChange('status', e.target.value)}
-                            className={`cell-select ${
-                              isDirty('status', doc.status) ? 'cell-changed' : ''
-                            }`}
+                            className={`cell-select ${isDirty('status', doc.status) ? 'cell-changed' : ''
+                              }`}
                           >
-                            <option value="Draft">Draft</option>
-                            <option value="Pending">Pending</option>
-                            <option value="Approved">Approved</option>
-                            <option value="Rejected">Rejected</option>
+                            <option value={DOCUMENT_STATUS.Draft}>Draft</option>
+                            <option value={DOCUMENT_STATUS.Pending}>Pending</option>
+                            <option value={DOCUMENT_STATUS.Approved}>Approved</option>
+                            <option value={DOCUMENT_STATUS.Rejected}>Rejected</option>
                           </select>
                           {isDirty('status', doc.status) && (
                             <span className="dirty-indicator" title="Unsaved changes" />
@@ -348,7 +345,7 @@ export const DocumentTable: React.FC<DocumentTableProps> = ({
                             >
                               <Edit2 size={16} />
                             </button>
-                            {userRole === 'ADMIN' && (
+                            {userRole === USER_ROLE.ADMIN && (
                               <button
                                 type="button"
                                 className="action-icon-btn btn-delete"

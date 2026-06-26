@@ -1,5 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any, react-hooks/set-state-in-effect */
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React from 'react';
 import { AppProvider, useApp } from './context/AppContext';
 import { Sidebar } from './components/Sidebar';
 import { Header } from './components/Header';
@@ -9,9 +8,9 @@ import { DocumentTable } from './components/DocumentTable';
 import { DocumentModal } from './components/DocumentModal';
 import { BulkImportModal } from './components/BulkImportModal';
 import { ConfirmDialog } from './components/ConfirmDialog';
-import { mockApi } from './services/mockApi';
-import type { Document, DocumentCategory, DocumentStatus } from './types';
+import { useDocuments } from './hooks/useDocuments';
 import { Check, AlertTriangle, Info, X } from 'lucide-react';
+
 
 // Toast portal renderer component
 const ToastPortal: React.FC = () => {
@@ -52,167 +51,34 @@ const ToastPortal: React.FC = () => {
 
 // Main Dashboard Content
 const DashboardContent: React.FC = () => {
-  const { userRole, currentUser, triggerRefresh, refreshList, showToast, t } = useApp();
-
-  // Search & Filter parameters
-  const [search, setSearch] = useState('');
-  const [category, setCategory] = useState<DocumentCategory | 'ALL'>('ALL');
-  const [status, setStatus] = useState<DocumentStatus | 'ALL'>('ALL');
-
-  // Pagination states
-  const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(5);
-
-  // List data states
-  const [documents, setDocuments] = useState<Document[]>([]);
-  const [totalRecords, setTotalRecords] = useState(0);
-  const [loading, setLoading] = useState(true);
-
-  // Stats states (total scope metrics)
-  const [stats, setStats] = useState({
-    total: 0,
-    pending: 0,
-    approved: 0,
-    categoriesCount: 0,
-  });
-
-  // Modal toggle states
-  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-  const [isImportModalOpen, setIsImportModalOpen] = useState(false);
-  const [documentToDelete, setDocumentToDelete] = useState<Document | null>(null);
-  const [isDeleting, setIsDeleting] = useState(false);
-
-  // Keep showToast ref stable so it doesn't appear in effect deps
-  const showToastRef = useRef(showToast);
-  useEffect(() => { showToastRef.current = showToast; }, [showToast]);
-
-  // Fetch documents — single effect watching all params, no stale closure
-  useEffect(() => {
-    let cancelled = false;
-    const run = async () => {
-      setLoading(true);
-      try {
-        const response = await mockApi.getDocuments({
-          page: currentPage,
-          limit: pageSize,
-          search,
-          category,
-          status,
-          userRole,
-          currentUser,
-        });
-        if (!cancelled) {
-          setDocuments(response.data);
-          setTotalRecords(response.total);
-        }
-      } catch (error: any) {
-        if (!cancelled) showToastRef.current(error.message || 'Failed to fetch documents', 'error');
-      } finally {
-        if (!cancelled) setLoading(false);
-      }
-    };
-    run();
-    return () => { cancelled = true; };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentPage, pageSize, search, category, status, userRole, currentUser, triggerRefresh]);
-
-  // Compute live KPIs metrics matching active role scope
-  const calculateMetrics = useCallback(async () => {
-    try {
-      const allScopedDocs = await mockApi.getDocuments({
-        page: 1,
-        limit: 1000000,
-        search: '',
-        category: 'ALL',
-        status: 'ALL',
-        userRole,
-        currentUser,
-      });
-
-      const list = allScopedDocs.data;
-      const total = list.length;
-      const pending = list.filter((d) => d.status === 'Pending').length;
-      const approved = list.filter((d) => d.status === 'Approved').length;
-      
-      const uniqueCats = new Set(list.map((d) => d.category));
-
-      setStats({
-        total,
-        pending,
-        approved,
-        categoriesCount: uniqueCats.size,
-      });
-    } catch {
-      // Silently catch stats errors
-    }
-  }, [userRole, currentUser]);
-
-  // Sync stats calculations
-  useEffect(() => {
-    calculateMetrics();
-  }, [calculateMetrics, triggerRefresh]);
-
-  // Reset to first page when search filters change
-  // Must be useCallback so Toolbar's debounce dep doesn't re-fire on every render
-  const handleSearchChange = useCallback((val: string) => {
-    setSearch(val);
-    setCurrentPage(1);
-  }, []);
-
-  const handleCategoryChange = useCallback((val: DocumentCategory | 'ALL') => {
-    setCategory(val);
-    setCurrentPage(1);
-  }, []);
-
-  const handleStatusChange = useCallback((val: DocumentStatus | 'ALL') => {
-    setStatus(val);
-    setCurrentPage(1);
-  }, []);
-
-  const handlePageChange = useCallback((page: number) => {
-    setCurrentPage(page);
-  }, []);
-
-  const handlePageSizeChange = useCallback((size: number) => {
-    setPageSize(size);
-    setCurrentPage(1);
-  }, []);
-
-
-  // Add Document handler
-  const handleSaveDocument = async (docPayload: Omit<Document, 'id' | 'createdDate'>) => {
-    await mockApi.createDocument(docPayload);
-    showToast(t('addSuccess'), 'success');
-    refreshList();
-  };
-
-  // Inline Edit Save handler
-  const handleInlineSave = async (id: string, updatedFields: Partial<Document>) => {
-    await mockApi.updateDocument(id, updatedFields);
-    showToast(t('editSuccess'), 'success');
-    refreshList();
-  };
-
-  // Delete handler
-  const handleDeleteConfirm = async () => {
-    if (!documentToDelete) return;
-    setIsDeleting(true);
-    try {
-      await mockApi.deleteDocument(documentToDelete.id);
-      showToast(t('deleteSuccess'), 'success');
-      setDocumentToDelete(null);
-      
-      // Handle page overflow backpage index decrement
-      if (documents.length === 1 && currentPage > 1) {
-        setCurrentPage((prev) => prev - 1);
-      }
-      refreshList();
-    } catch (err: any) {
-      showToast(err.message || 'Delete operation failed', 'error');
-    } finally {
-      setIsDeleting(false);
-    }
-  };
+  const {
+    search,
+    category,
+    status,
+    currentPage,
+    pageSize,
+    documents,
+    totalRecords,
+    loading,
+    stats,
+    isAddModalOpen,
+    isImportModalOpen,
+    documentToDelete,
+    isDeleting,
+    handleSearchChange,
+    handleCategoryChange,
+    handleStatusChange,
+    handlePageChange,
+    handlePageSizeChange,
+    handleSaveDocument,
+    handleInlineSave,
+    handleDeleteConfirm,
+    setIsAddModalOpen,
+    setIsImportModalOpen,
+    setDocumentToDelete,
+    refreshList,
+    t,
+  } = useDocuments();
 
   return (
     <div className="app-container">

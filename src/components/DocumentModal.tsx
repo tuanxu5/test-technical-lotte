@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any, react-hooks/set-state-in-effect */
 import React, { useState, useEffect } from 'react';
-import type { Document, DocumentCategory, DocumentStatus } from '../types';
+import { DOCUMENT_CATEGORY, DOCUMENT_STATUS } from '../types';
+import type { Document } from '../types';
 import { useApp } from '../context/AppContext';
 import { AlertTriangle, User } from 'lucide-react';
 import { Modal, ModalHeader } from './ui/Card';
@@ -22,13 +23,13 @@ export const DocumentModal: React.FC<DocumentModalProps> = ({
   documentToEdit,
 }) => {
   const { currentUser } = useApp();
-  
+
   // Form states
   const [code, setCode] = useState('');
   const [title, setTitle] = useState('');
-  const [category, setCategory] = useState<DocumentCategory>('Contract');
-  const [status, setStatus] = useState<DocumentStatus>('Draft');
-  
+  const [category, setCategory] = useState<DOCUMENT_CATEGORY>(DOCUMENT_CATEGORY.CONTRACT);
+  const [status, setStatus] = useState<DOCUMENT_STATUS>(DOCUMENT_STATUS.DRAFT);
+
   // Validation error states
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -44,8 +45,8 @@ export const DocumentModal: React.FC<DocumentModalProps> = ({
     } else {
       setCode('');
       setTitle('');
-      setCategory('Contract');
-      setStatus('Draft');
+      setCategory(DOCUMENT_CATEGORY.CONTRACT);
+      setStatus(DOCUMENT_STATUS.DRAFT);
     }
     setErrors({});
     setApiError(null);
@@ -105,7 +106,7 @@ export const DocumentModal: React.FC<DocumentModalProps> = ({
       <ModalHeader
         title={documentToEdit ? 'Edit EVD Document' : 'Create New EVD Document'}
         subtitle={
-          documentToEdit 
+          documentToEdit
             ? 'Update document metadata and parameters in SYS registry'
             : 'Register a new document in the Lotte x CMC Global SYS EVD system'
         }
@@ -154,26 +155,26 @@ export const DocumentModal: React.FC<DocumentModalProps> = ({
             <Select
               label="Category"
               value={category}
-              onChange={(e) => setCategory(e.target.value as DocumentCategory)}
+              onChange={(e) => setCategory(e.target.value as DOCUMENT_CATEGORY)}
               disabled={isSubmitting}
               options={[
-                { value: 'Contract', label: 'Contract' },
-                { value: 'Report', label: 'Report' },
-                { value: 'Invoice', label: 'Invoice' },
-                { value: 'Technical', label: 'Technical' },
+                { value: DOCUMENT_CATEGORY.CONTRACT, label: 'Contract' },
+                { value: DOCUMENT_CATEGORY.REPORT, label: 'Report' },
+                { value: DOCUMENT_CATEGORY.INVOICE, label: 'Invoice' },
+                { value: DOCUMENT_CATEGORY.TECHNICAL, label: 'Technical' },
               ]}
             />
 
             <Select
               label="Initial Status"
               value={status}
-              onChange={(e) => setStatus(e.target.value as DocumentStatus)}
+              onChange={(e) => setStatus(e.target.value as DOCUMENT_STATUS)}
               disabled={isSubmitting}
               options={[
-                { value: 'Draft', label: 'Draft' },
-                { value: 'Pending', label: 'Pending' },
-                { value: 'Approved', label: 'Approved' },
-                { value: 'Rejected', label: 'Rejected' },
+                { value: DOCUMENT_STATUS.DRAFT, label: 'Draft' },
+                { value: DOCUMENT_STATUS.PENDING, label: 'Pending' },
+                { value: DOCUMENT_STATUS.APPROVED, label: 'Approved' },
+                { value: DOCUMENT_STATUS.REJECTED, label: 'Rejected' },
               ]}
             />
           </div>

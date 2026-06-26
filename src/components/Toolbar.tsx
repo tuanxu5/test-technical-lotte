@@ -1,17 +1,16 @@
-/* eslint-disable react-hooks/set-state-in-effect */
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { useApp } from '../context/AppContext';
-import type { DocumentCategory, DocumentStatus } from '../types';
+import { DOCUMENT_CATEGORY, DOCUMENT_STATUS } from '../types';
 import { Search, X, Plus, Upload } from 'lucide-react';
 import { Select } from './ui/Select';
 import { Button } from './ui/Button';
 
 interface ToolbarProps {
   onSearchChange: (search: string) => void;
-  onCategoryChange: (category: DocumentCategory | 'ALL') => void;
-  onStatusChange: (status: DocumentStatus | 'ALL') => void;
-  currentCategory: DocumentCategory | 'ALL';
-  currentStatus: DocumentStatus | 'ALL';
+  onCategoryChange: (category: DOCUMENT_CATEGORY | 'ALL') => void;
+  onStatusChange: (status: DOCUMENT_STATUS | 'ALL') => void;
+  currentCategory: DOCUMENT_CATEGORY | 'ALL';
+  currentStatus: DOCUMENT_STATUS | 'ALL';
   currentSearch: string;
   onAddClick: () => void;
   onImportClick: () => void;
@@ -28,31 +27,14 @@ export const Toolbar: React.FC<ToolbarProps> = ({
   onImportClick,
 }) => {
   const { t } = useApp();
-  const [localSearch, setLocalSearch] = useState(currentSearch);
-
-  // Debounce logic for search
-  useEffect(() => {
-    const handler = setTimeout(() => {
-      onSearchChange(localSearch);
-    }, 300); // 300ms debounce
-
-    return () => {
-      clearTimeout(handler);
-    };
-  }, [localSearch, onSearchChange]);
-
-  // Sync local search when external search changes (like reset)
-  useEffect(() => {
-    setLocalSearch(currentSearch);
-  }, [currentSearch]);
 
   const handleClearFilters = () => {
-    setLocalSearch('');
+    onSearchChange('');
     onCategoryChange('ALL');
     onStatusChange('ALL');
   };
 
-  const hasActiveFilters = localSearch !== '' || currentCategory !== 'ALL' || currentStatus !== 'ALL';
+  const hasActiveFilters = currentSearch !== '' || currentCategory !== 'ALL' || currentStatus !== 'ALL';
 
   return (
     <div className="sys-toolbar">
@@ -64,14 +46,14 @@ export const Toolbar: React.FC<ToolbarProps> = ({
             type="text"
             className="search-input"
             placeholder={t('searchPlaceholder')}
-            value={localSearch}
-            onChange={(e) => setLocalSearch(e.target.value)}
+            value={currentSearch}
+            onChange={(e) => onSearchChange(e.target.value)}
           />
-          {localSearch && (
+          {currentSearch && (
             <button
               type="button"
               className="search-clear-btn"
-              onClick={() => setLocalSearch('')}
+              onClick={() => onSearchChange('')}
             >
               <X size={14} />
             </button>
@@ -82,14 +64,14 @@ export const Toolbar: React.FC<ToolbarProps> = ({
         <Select
           label={t('category')}
           value={currentCategory}
-          onChange={(e) => onCategoryChange(e.target.value as DocumentCategory | 'ALL')}
+          onChange={(e) => onCategoryChange(e.target.value as DOCUMENT_CATEGORY | 'ALL')}
           className="filter-select"
           options={[
             { value: 'ALL', label: t('all') },
-            { value: 'Contract', label: 'Contract' },
-            { value: 'Report', label: 'Report' },
-            { value: 'Invoice', label: 'Invoice' },
-            { value: 'Technical', label: 'Technical' },
+            { value: DOCUMENT_CATEGORY.CONTRACT, label: 'Contract' },
+            { value: DOCUMENT_CATEGORY.REPORT, label: 'Report' },
+            { value: DOCUMENT_CATEGORY.INVOICE, label: 'Invoice' },
+            { value: DOCUMENT_CATEGORY.TECHNICAL, label: 'Technical' },
           ]}
         />
 
@@ -97,14 +79,14 @@ export const Toolbar: React.FC<ToolbarProps> = ({
         <Select
           label={t('status')}
           value={currentStatus}
-          onChange={(e) => onStatusChange(e.target.value as DocumentStatus | 'ALL')}
+          onChange={(e) => onStatusChange(e.target.value as DOCUMENT_STATUS | 'ALL')}
           className="filter-select"
           options={[
             { value: 'ALL', label: t('all') },
-            { value: 'Draft', label: 'Draft' },
-            { value: 'Pending', label: 'Pending' },
-            { value: 'Approved', label: 'Approved' },
-            { value: 'Rejected', label: 'Rejected' },
+            { value: DOCUMENT_STATUS.DRAFT, label: 'Draft' },
+            { value: DOCUMENT_STATUS.PENDING, label: 'Pending' },
+            { value: DOCUMENT_STATUS.APPROVED, label: 'Approved' },
+            { value: DOCUMENT_STATUS.REJECTED, label: 'Rejected' },
           ]}
         />
 
@@ -127,7 +109,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
           <Upload size={16} />
           <span>{t('bulkImport')}</span>
         </Button>
-        
+
         <Button variant="primary" onClick={onAddClick}>
           <Plus size={16} />
           <span>{t('createDoc')}</span>

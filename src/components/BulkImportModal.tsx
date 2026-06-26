@@ -2,7 +2,8 @@
 import React, { useState, useRef } from 'react';
 import { useApp } from '../context/AppContext';
 import { mockApi } from '../services/mockApi';
-import type { Document, DocumentCategory, DocumentStatus, RowValidationError } from '../types';
+import { DOCUMENT_CATEGORY, DOCUMENT_STATUS } from '../types';
+import type { Document, RowValidationError } from '../types';
 import { Upload, Download, AlertTriangle } from 'lucide-react';
 import { VirtualTable } from './VirtualTable';
 import { Modal, ModalHeader } from './ui/Card';
@@ -28,7 +29,7 @@ export const BulkImportModal: React.FC<BulkImportModalProps> = ({
   const [progress, setProgress] = useState(0);
   const [processedCount, setProcessedCount] = useState(0);
   const [totalCount, setTotalCount] = useState(0);
-  
+
   // Results states
   const [hasResults, setHasResults] = useState(false);
   const [validRecords, setValidRecords] = useState<Omit<Document, 'id' | 'createdDate'>[]>([]);
@@ -40,7 +41,7 @@ export const BulkImportModal: React.FC<BulkImportModalProps> = ({
 
   // Simple CSV Template Download helper
   const downloadTemplate = () => {
-    const csvContent = 
+    const csvContent =
       'code,title,category,status\n' +
       'LOTT-EVD-901,Lotte Supermarket Logistics SLA Contract 2026,Contract,Approved\n' +
       'LOTT-EVD-902,SYS API Gateway Integration Spec CMC,Technical,Pending\n' +
@@ -61,11 +62,20 @@ export const BulkImportModal: React.FC<BulkImportModalProps> = ({
   // Generate 5000+ Mock Records for demonstration
   const generateLargeMockCSV = () => {
     let csvContent = 'code,title,category,status\n';
-    
-    // Generate 5000 rows
-    const categories: DocumentCategory[] = ['Contract', 'Report', 'Invoice', 'Technical'];
-    const statuses: DocumentStatus[] = ['Draft', 'Pending', 'Approved', 'Rejected'];
-    
+
+    const categories: DOCUMENT_CATEGORY[] = [
+      DOCUMENT_CATEGORY.CONTRACT,
+      DOCUMENT_CATEGORY.REPORT,
+      DOCUMENT_CATEGORY.INVOICE,
+      DOCUMENT_CATEGORY.TECHNICAL,
+    ];
+    const statuses: DOCUMENT_STATUS[] = [
+      DOCUMENT_STATUS.DRAFT,
+      DOCUMENT_STATUS.PENDING,
+      DOCUMENT_STATUS.APPROVED,
+      DOCUMENT_STATUS.REJECTED,
+    ];
+
     for (let i = 1; i <= 5000; i++) {
       // 5% rows have validation errors for demo
       const isInvalid = i % 20 === 0;
@@ -73,7 +83,7 @@ export const BulkImportModal: React.FC<BulkImportModalProps> = ({
       const title = isInvalid ? 'Short' : `Mock Bulk EVD Generated Document Row Number ${i}`;
       const category = isInvalid ? 'InvalidCategory' : categories[i % 4];
       const status = isInvalid ? 'InvalidStatus' : statuses[i % 4];
-      
+
       csvContent += `${code},${title},${category},${status}\n`;
     }
 
@@ -157,7 +167,7 @@ export const BulkImportModal: React.FC<BulkImportModalProps> = ({
 
       const parsedValids: Omit<Document, 'id' | 'createdDate'>[] = [];
       const parsedInvalids: RowValidationError[] = [];
-      
+
       // Load current codes from localStorage to check unique constraint
       let existingCodes: Set<string>;
       try {
@@ -177,11 +187,11 @@ export const BulkImportModal: React.FC<BulkImportModalProps> = ({
 
       const processNextChunk = async () => {
         const limit = Math.min(currentIndex + CHUNK_SIZE, totalRows);
-        
+
         for (let i = currentIndex; i < limit; i++) {
           const rowNum = i + 2; // 1-based, plus headers row
           const columns = parseCSVLine(rows[i]);
-          
+
           // Row values
           const codeVal = columns[codeIndex] || '';
           const titleVal = columns[titleIndex] || '';
@@ -214,7 +224,7 @@ export const BulkImportModal: React.FC<BulkImportModalProps> = ({
           }
 
           // 3. Validate Category
-          const validCategories: DocumentCategory[] = ['Contract', 'Report', 'Invoice', 'Technical'];
+          const validCategories = Object.values(DOCUMENT_CATEGORY);
           const cat = validCategories.find(c => c.toLowerCase() === categoryVal.toLowerCase());
           if (!categoryVal.trim()) {
             rowErrors.push('Category is required');
@@ -223,8 +233,8 @@ export const BulkImportModal: React.FC<BulkImportModalProps> = ({
           }
 
           // 4. Validate Status
-          const validStatuses: DocumentStatus[] = ['Draft', 'Pending', 'Approved', 'Rejected'];
-          let status: DocumentStatus = 'Draft';
+          const validStatuses = Object.values(DOCUMENT_STATUS);
+          let status: DOCUMENT_STATUS = DOCUMENT_STATUS.DRAFT;
           if (statusVal.trim()) {
             const matchedStatus = validStatuses.find(s => s.toLowerCase() === statusVal.toLowerCase());
             if (matchedStatus) {
@@ -321,7 +331,7 @@ export const BulkImportModal: React.FC<BulkImportModalProps> = ({
             <Upload size={48} className="upload-icon-pulse" />
             <h3>Select EVD CSV File to upload</h3>
             <p>Drag and drop a <code>.csv</code> file, or click to browse files from your computer.</p>
-            
+
             <input
               ref={fileInputRef}
               type="file"
@@ -358,7 +368,7 @@ export const BulkImportModal: React.FC<BulkImportModalProps> = ({
             <div className="spinner-loader"></div>
             <h3>Analyzing & Validating EVD Records...</h3>
             <p>Processing row {processedCount} of {totalCount} records...</p>
-            
+
             <div className="progress-bar-wrapper">
               <div className="progress-bar-fill" style={{ width: `${progress}%` }}></div>
             </div>
@@ -414,7 +424,7 @@ export const BulkImportModal: React.FC<BulkImportModalProps> = ({
                   <span style={{ width: '15%' }}>Category</span>
                   <span style={{ width: '15%' }}>Status</span>
                 </div>
-                
+
                 <VirtualTable
                   data={validRecords}
                   rowHeight={40}
@@ -489,7 +499,7 @@ export const BulkImportModal: React.FC<BulkImportModalProps> = ({
         >
           Close
         </Button>
-        
+
         {hasResults && validRecords.length > 0 && (
           <Button
             variant="primary"

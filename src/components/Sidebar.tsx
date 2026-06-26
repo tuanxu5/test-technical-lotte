@@ -2,7 +2,7 @@ import React from 'react';
 import { useApp } from '../context/AppContext';
 import { FileText, Shield, Database, ChevronDown, RotateCcw, X } from 'lucide-react';
 import { SegmentedControl } from './ui/Toggle';
-import type { UserRole } from '../types';
+import { USER_ROLE } from '../types';
 
 export const Sidebar: React.FC = () => {
   const { userRole, setRole, resetDatabase, isSidebarOpen, setSidebarOpen, currentUser, t } = useApp();
@@ -25,11 +25,11 @@ export const Sidebar: React.FC = () => {
             </div>
             <ChevronDown size={16} className="workspace-chevron" />
           </div>
-          
+
           {/* Mobile Sidebar Close Button */}
-          <button 
-            type="button" 
-            className="btn-close-sidebar-mobile" 
+          <button
+            type="button"
+            className="btn-close-sidebar-mobile"
             onClick={() => setSidebarOpen(false)}
           >
             <X size={18} />
@@ -44,7 +44,7 @@ export const Sidebar: React.FC = () => {
             <span>{t('sidebarRegistryLink')}</span>
             <span className="nav-active-dot" />
           </a>
-          
+
           <div className="nav-section-title">{t('sidebarManagementTitle')}</div>
           <a href="#" className="nav-item disabled" onClick={(e) => e.preventDefault()}>
             <Shield size={16} />
@@ -67,11 +67,11 @@ export const Sidebar: React.FC = () => {
               <div className="user-name">{currentUser}</div>
               <div className="user-role-label">{userRole} {t('sidebarRoleScope')}</div>
             </div>
-            
+
             {/* Subtle seed reset action */}
-            <button 
-              type="button" 
-              className="btn-reset-db-icon" 
+            <button
+              type="button"
+              className="btn-reset-db-icon"
               onClick={() => {
                 resetDatabase();
                 setSidebarOpen(false);
@@ -83,15 +83,15 @@ export const Sidebar: React.FC = () => {
           </div>
 
           {/* Segmented Control Switcher */}
-          <SegmentedControl<UserRole>
+          <SegmentedControl<USER_ROLE>
             selectedValue={userRole}
             onChange={(role) => {
               setRole(role);
               setSidebarOpen(false);
             }}
             options={[
-              { value: 'ADMIN', label: 'ADMIN', activeClass: 'active-admin' },
-              { value: 'STAFF', label: 'STAFF', activeClass: 'active-staff' },
+              { value: USER_ROLE.ADMIN, label: 'ADMIN', activeClass: 'active-admin' },
+              { value: USER_ROLE.STAFF, label: 'STAFF', activeClass: 'active-staff' },
             ]}
           />
         </div>

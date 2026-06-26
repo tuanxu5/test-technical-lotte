@@ -1,6 +1,6 @@
 /* eslint-disable react-refresh/only-export-components */
 import React, { createContext, useContext, useState, useCallback, type ReactNode } from 'react';
-import type { UserRole } from '../types';
+import { USER_ROLE } from '../types';
 import { mockApi } from '../services/mockApi';
 
 export interface ToastMessage {
@@ -44,7 +44,7 @@ const TRANSLATIONS = {
     pendingDocs: 'Pending Reviews',
     approvedRate: 'Approved Rate',
     activeCats: 'Active Categories',
-    
+
     // Sidebar
     sidebarRegistryTitle: 'EVD File Module',
     sidebarRegistryLink: 'Documents Registry',
@@ -99,9 +99,9 @@ const TRANSLATIONS = {
 };
 
 interface AppContextProps {
-  userRole: UserRole;
+  userRole: USER_ROLE;
   currentUser: string;
-  setRole: (role: UserRole) => void;
+  setRole: (role: USER_ROLE) => void;
   toasts: ToastMessage[];
   showToast: (message: string, type?: ToastMessage['type']) => void;
   dismissToast: (id: string) => void;
@@ -118,7 +118,7 @@ interface AppContextProps {
 const AppContext = createContext<AppContextProps | undefined>(undefined);
 
 export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [userRole, setUserRole] = useState<UserRole>('ADMIN');
+  const [userRole, setUserRole] = useState<USER_ROLE>(USER_ROLE.ADMIN);
   const [currentUser, setCurrentUser] = useState<string>('Admin User');
   const [toasts, setToasts] = useState<ToastMessage[]>([]);
   const [triggerRefresh, setTriggerRefresh] = useState<boolean>(false);
@@ -127,9 +127,9 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   );
   const [isSidebarOpen, setSidebarOpen] = useState<boolean>(false);
 
-  const setRole = useCallback((role: UserRole) => {
+  const setRole = useCallback((role: USER_ROLE) => {
     setUserRole(role);
-    if (role === 'ADMIN') {
+    if (role === USER_ROLE.ADMIN) {
       setCurrentUser('Admin User');
     } else {
       setCurrentUser('Staff Member');

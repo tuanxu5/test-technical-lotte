@@ -1,4 +1,5 @@
-import type { Document, DocumentCategory, DocumentStatus, FetchDocumentsResponse } from '../types';
+import { DOCUMENT_CATEGORY, DOCUMENT_STATUS, USER_ROLE } from '../types';
+import type { Document, FetchDocumentsResponse } from '../types';
 
 const STORAGE_KEY = 'sys_evd_documents';
 
@@ -10,8 +11,8 @@ const INITIAL_DOCUMENTS: Document[] = [
     id: 'doc-1',
     code: 'LOTT-EVD-001',
     title: 'Lotte Plaza Mall Lease Contract 2026',
-    category: 'Contract',
-    status: 'Approved',
+    category: DOCUMENT_CATEGORY.CONTRACT,
+    status: DOCUMENT_STATUS.APPROVED,
     createdBy: 'Admin User',
     createdDate: '2026-01-15T08:30:00.000Z',
   },
@@ -19,8 +20,8 @@ const INITIAL_DOCUMENTS: Document[] = [
     id: 'doc-2',
     code: 'LOTT-EVD-002',
     title: 'SYS Admin Dashboard Technical Architecture',
-    category: 'Technical',
-    status: 'Approved',
+    category: DOCUMENT_CATEGORY.TECHNICAL,
+    status: DOCUMENT_STATUS.APPROVED,
     createdBy: 'CMC Developer',
     createdDate: '2026-02-10T14:45:00.000Z',
   },
@@ -28,8 +29,8 @@ const INITIAL_DOCUMENTS: Document[] = [
     id: 'doc-3',
     code: 'LOTT-EVD-003',
     title: 'CMC Global Integration QA Test Plan v1.4',
-    category: 'Technical',
-    status: 'Pending',
+    category: DOCUMENT_CATEGORY.TECHNICAL,
+    status: DOCUMENT_STATUS.PENDING,
     createdBy: 'Staff Member',
     createdDate: '2026-06-25T10:15:00.000Z',
   },
@@ -37,8 +38,8 @@ const INITIAL_DOCUMENTS: Document[] = [
     id: 'doc-4',
     code: 'LOTT-EVD-004',
     title: 'Q1 Financial Performance Audit Report',
-    category: 'Report',
-    status: 'Pending',
+    category: DOCUMENT_CATEGORY.REPORT,
+    status: DOCUMENT_STATUS.PENDING,
     createdBy: 'Admin User',
     createdDate: '2026-04-18T09:00:00.000Z',
   },
@@ -46,8 +47,8 @@ const INITIAL_DOCUMENTS: Document[] = [
     id: 'doc-5',
     code: 'LOTT-EVD-005',
     title: 'CMC Software License Invoice #INV-889',
-    category: 'Invoice',
-    status: 'Draft',
+    category: DOCUMENT_CATEGORY.INVOICE,
+    status: DOCUMENT_STATUS.DRAFT,
     createdBy: 'Staff Member',
     createdDate: '2026-06-24T16:30:00.000Z',
   },
@@ -55,8 +56,8 @@ const INITIAL_DOCUMENTS: Document[] = [
     id: 'doc-6',
     code: 'LOTT-EVD-006',
     title: 'Lotte Duty Free Store Expansion Feasibility Study',
-    category: 'Report',
-    status: 'Approved',
+    category: DOCUMENT_CATEGORY.REPORT,
+    status: DOCUMENT_STATUS.APPROVED,
     createdBy: 'Admin User',
     createdDate: '2026-03-05T11:00:00.000Z',
   },
@@ -64,8 +65,8 @@ const INITIAL_DOCUMENTS: Document[] = [
     id: 'doc-7',
     code: 'LOTT-EVD-007',
     title: 'EVD File Transfer Security Auditing Protocol',
-    category: 'Technical',
-    status: 'Rejected',
+    category: DOCUMENT_CATEGORY.TECHNICAL,
+    status: DOCUMENT_STATUS.REJECTED,
     createdBy: 'CMC Lead Architect',
     createdDate: '2026-05-12T13:20:00.000Z',
   },
@@ -73,8 +74,8 @@ const INITIAL_DOCUMENTS: Document[] = [
     id: 'doc-8',
     code: 'LOTT-EVD-008',
     title: 'CMC Global Resource Deployment Contract',
-    category: 'Contract',
-    status: 'Approved',
+    category: DOCUMENT_CATEGORY.CONTRACT,
+    status: DOCUMENT_STATUS.APPROVED,
     createdBy: 'Admin User',
     createdDate: '2026-02-28T15:40:00.000Z',
   },
@@ -82,8 +83,8 @@ const INITIAL_DOCUMENTS: Document[] = [
     id: 'doc-9',
     code: 'LOTT-EVD-009',
     title: 'EVD Microservice Deployment Guidelines',
-    category: 'Technical',
-    status: 'Draft',
+    category: DOCUMENT_CATEGORY.TECHNICAL,
+    status: DOCUMENT_STATUS.DRAFT,
     createdBy: 'Staff Member',
     createdDate: '2026-06-26T02:00:00.000Z',
   },
@@ -91,8 +92,8 @@ const INITIAL_DOCUMENTS: Document[] = [
     id: 'doc-10',
     code: 'LOTT-EVD-010',
     title: 'Lotte Mart Supply Chain SLA Agreement',
-    category: 'Contract',
-    status: 'Pending',
+    category: DOCUMENT_CATEGORY.CONTRACT,
+    status: DOCUMENT_STATUS.PENDING,
     createdBy: 'Admin User',
     createdDate: '2026-05-30T10:00:00.000Z',
   },
@@ -100,8 +101,8 @@ const INITIAL_DOCUMENTS: Document[] = [
     id: 'doc-11',
     code: 'LOTT-EVD-011',
     title: 'Q2 Marketing Campaigns Budget Proposal',
-    category: 'Report',
-    status: 'Draft',
+    category: DOCUMENT_CATEGORY.REPORT,
+    status: DOCUMENT_STATUS.DRAFT,
     createdBy: 'Staff Member',
     createdDate: '2026-06-14T09:12:00.000Z',
   },
@@ -109,8 +110,8 @@ const INITIAL_DOCUMENTS: Document[] = [
     id: 'doc-12',
     code: 'LOTT-EVD-012',
     title: 'CMC Global Hardware Procurement Invoice',
-    category: 'Invoice',
-    status: 'Approved',
+    category: DOCUMENT_CATEGORY.INVOICE,
+    status: DOCUMENT_STATUS.APPROVED,
     createdBy: 'Admin User',
     createdDate: '2026-04-01T11:45:00.000Z',
   },
@@ -118,8 +119,8 @@ const INITIAL_DOCUMENTS: Document[] = [
     id: 'doc-13',
     code: 'LOTT-EVD-013',
     title: 'EVD File Storage Scalability Benchmarking',
-    category: 'Technical',
-    status: 'Rejected',
+    category: DOCUMENT_CATEGORY.TECHNICAL,
+    status: DOCUMENT_STATUS.REJECTED,
     createdBy: 'Staff Member',
     createdDate: '2026-05-20T17:50:00.000Z',
   },
@@ -127,8 +128,8 @@ const INITIAL_DOCUMENTS: Document[] = [
     id: 'doc-14',
     code: 'LOTT-EVD-014',
     title: 'Lotte Cinema Digital Projector Maintenance Invoice',
-    category: 'Invoice',
-    status: 'Pending',
+    category: DOCUMENT_CATEGORY.INVOICE,
+    status: DOCUMENT_STATUS.PENDING,
     createdBy: 'Admin User',
     createdDate: '2026-05-15T08:00:00.000Z',
   },
@@ -136,8 +137,8 @@ const INITIAL_DOCUMENTS: Document[] = [
     id: 'doc-15',
     code: 'LOTT-EVD-015',
     title: 'CMC Global Outsourcing Service Level Contract',
-    category: 'Contract',
-    status: 'Draft',
+    category: DOCUMENT_CATEGORY.CONTRACT,
+    status: DOCUMENT_STATUS.DRAFT,
     createdBy: 'Staff Member',
     createdDate: '2026-06-20T10:30:00.000Z',
   }
@@ -165,9 +166,9 @@ export const mockApi = {
     page: number;
     limit: number;
     search: string;
-    category: DocumentCategory | 'ALL';
-    status: DocumentStatus | 'ALL';
-    userRole: 'ADMIN' | 'STAFF';
+    category: DOCUMENT_CATEGORY | 'ALL';
+    status: DOCUMENT_STATUS | 'ALL';
+    userRole: USER_ROLE;
     currentUser: string;
   }): Promise<FetchDocumentsResponse> => {
     await delay(400); // 400ms latency simulation
@@ -176,9 +177,21 @@ export const mockApi = {
 
     // 1. Role-based Scope filtering:
     // If role is STAFF, display only documents created by this staff user
-    if (params.userRole === 'STAFF') {
+    if (params.userRole === USER_ROLE.STAFF) {
       documents = documents.filter((doc) => doc.createdBy === params.currentUser);
     }
+
+    // Compute stats matching active role scope
+    const statsTotal = documents.length;
+    const statsPending = documents.filter((d) => d.status === DOCUMENT_STATUS.PENDING).length;
+    const statsApproved = documents.filter((d) => d.status === DOCUMENT_STATUS.APPROVED).length;
+    const uniqueCats = new Set(documents.map((d) => d.category));
+    const stats = {
+      total: statsTotal,
+      pending: statsPending,
+      approved: statsApproved,
+      categoriesCount: uniqueCats.size,
+    };
 
     // 2. Search filtering (Title or Code, case-insensitive)
     if (params.search.trim()) {
@@ -215,6 +228,7 @@ export const mockApi = {
       page: params.page,
       limit: params.limit,
       totalPages: Math.max(1, totalPages),
+      stats,
     };
   },
 

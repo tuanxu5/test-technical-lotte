@@ -1,5 +1,6 @@
 import React from 'react';
 import { Check, X, Clock, FileText, Shield } from 'lucide-react';
+import { USER_ROLE } from '../../types';
 
 type StatusValue = 'approved' | 'rejected' | 'pending' | 'draft' | string;
 
@@ -10,8 +11,8 @@ interface StatusBadgeProps {
 const STATUS_CONFIG: Record<string, { icon: React.ReactNode; className: string }> = {
   approved: { icon: <Check size={12} />, className: 'status-approved' },
   rejected: { icon: <X size={12} />, className: 'status-rejected' },
-  pending:  { icon: <Clock size={12} />, className: 'status-pending' },
-  draft:    { icon: <FileText size={12} />, className: 'status-draft' },
+  pending: { icon: <Clock size={12} />, className: 'status-pending' },
+  draft: { icon: <FileText size={12} />, className: 'status-draft' },
 };
 
 export const StatusBadge: React.FC<StatusBadgeProps> = ({ status }) => {
@@ -37,15 +38,13 @@ export const CodeBadge: React.FC<CodeBadgeProps> = ({ code }) => (
 
 // ---
 
-type RoleVariant = 'ADMIN' | 'STAFF';
-
 interface RoleBadgeProps {
-  role: RoleVariant;
+  role: USER_ROLE;
 }
 
 export const RoleBadge: React.FC<RoleBadgeProps> = ({ role }) => {
   const style: React.CSSProperties =
-    role === 'ADMIN'
+    role === USER_ROLE.ADMIN
       ? { backgroundColor: 'var(--lotte-red-light)', color: 'var(--lotte-red)' }
       : { backgroundColor: 'var(--cmc-blue-light)', color: 'var(--cmc-blue)' };
 
