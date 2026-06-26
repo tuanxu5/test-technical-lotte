@@ -1,6 +1,9 @@
 import React from 'react';
 import { useApp } from '../context/AppContext';
-import { Globe, Shield, Menu } from 'lucide-react';
+import type { LangType } from '../context/AppContext';
+import { Globe, Menu } from 'lucide-react';
+import { RoleBadge } from './ui/Badge';
+import { SegmentedControl } from './ui/Toggle';
 
 export const Header: React.FC = () => {
   const { currentUser, userRole, lang, setLang, t, setSidebarOpen } = useApp();
@@ -25,20 +28,16 @@ export const Header: React.FC = () => {
         {/* Language Switcher */}
         <div className="lang-switcher">
           <Globe size={14} className="lang-globe-icon" />
-          <button
-            type="button"
-            className={`lang-btn ${lang === 'en' ? 'active' : ''}`}
-            onClick={() => setLang('en')}
-          >
-            EN
-          </button>
-          <button
-            type="button"
-            className={`lang-btn ${lang === 'vi' ? 'active' : ''}`}
-            onClick={() => setLang('vi')}
-          >
-            VI
-          </button>
+          <SegmentedControl<LangType>
+            className=""
+            buttonClassName="lang-btn"
+            options={[
+              { value: 'en', label: 'EN' },
+              { value: 'vi', label: 'VI' },
+            ]}
+            selectedValue={lang}
+            onChange={(val) => setLang(val)}
+          />
         </div>
 
         {/* User Card */}
@@ -49,10 +48,7 @@ export const Header: React.FC = () => {
           <div className="user-info">
             <div className="user-name">{currentUser}</div>
             <div className="role-container">
-              <span className={`role-badge badge-${userRole.toLowerCase()}`}>
-                <Shield size={10} style={{ marginRight: 3 }} />
-                {userRole}
-              </span>
+              <RoleBadge role={userRole} />
             </div>
           </div>
         </div>

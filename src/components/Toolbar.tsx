@@ -3,6 +3,8 @@ import React, { useState, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
 import type { DocumentCategory, DocumentStatus } from '../types';
 import { Search, X, Plus, Upload } from 'lucide-react';
+import { Select } from './ui/Select';
+import { Button } from './ui/Button';
 
 interface ToolbarProps {
   onSearchChange: (search: string) => void;
@@ -77,61 +79,59 @@ export const Toolbar: React.FC<ToolbarProps> = ({
         </div>
 
         {/* Category Dropdown */}
-        <div className="select-wrapper">
-          <label className="select-label">{t('category')}</label>
-          <select
-            value={currentCategory}
-            onChange={(e) => onCategoryChange(e.target.value as DocumentCategory | 'ALL')}
-            className="filter-select"
-          >
-            <option value="ALL">{t('all')}</option>
-            <option value="Contract">Contract</option>
-            <option value="Report">Report</option>
-            <option value="Invoice">Invoice</option>
-            <option value="Technical">Technical</option>
-          </select>
-        </div>
+        <Select
+          label={t('category')}
+          value={currentCategory}
+          onChange={(e) => onCategoryChange(e.target.value as DocumentCategory | 'ALL')}
+          className="filter-select"
+          options={[
+            { value: 'ALL', label: t('all') },
+            { value: 'Contract', label: 'Contract' },
+            { value: 'Report', label: 'Report' },
+            { value: 'Invoice', label: 'Invoice' },
+            { value: 'Technical', label: 'Technical' },
+          ]}
+        />
 
         {/* Status Dropdown */}
-        <div className="select-wrapper">
-          <label className="select-label">{t('status')}</label>
-          <select
-            value={currentStatus}
-            onChange={(e) => onStatusChange(e.target.value as DocumentStatus | 'ALL')}
-            className="filter-select"
-          >
-            <option value="ALL">{t('all')}</option>
-            <option value="Draft">Draft</option>
-            <option value="Pending">Pending</option>
-            <option value="Approved">Approved</option>
-            <option value="Rejected">Rejected</option>
-          </select>
-        </div>
+        <Select
+          label={t('status')}
+          value={currentStatus}
+          onChange={(e) => onStatusChange(e.target.value as DocumentStatus | 'ALL')}
+          className="filter-select"
+          options={[
+            { value: 'ALL', label: t('all') },
+            { value: 'Draft', label: 'Draft' },
+            { value: 'Pending', label: 'Pending' },
+            { value: 'Approved', label: 'Approved' },
+            { value: 'Rejected', label: 'Rejected' },
+          ]}
+        />
 
         {/* Clear Filters Button */}
         {hasActiveFilters && (
-          <button
-            type="button"
+          <Button
+            variant="secondary"
             className="btn-clear-filters"
             onClick={handleClearFilters}
             title="Reset Filters"
           >
             <X size={14} />
             <span>Clear</span>
-          </button>
+          </Button>
         )}
       </div>
 
       <div className="action-group">
-        <button type="button" className="btn btn-secondary" onClick={onImportClick}>
+        <Button variant="secondary" onClick={onImportClick}>
           <Upload size={16} />
           <span>{t('bulkImport')}</span>
-        </button>
+        </Button>
         
-        <button type="button" className="btn btn-primary" onClick={onAddClick}>
+        <Button variant="primary" onClick={onAddClick}>
           <Plus size={16} />
           <span>{t('createDoc')}</span>
-        </button>
+        </Button>
       </div>
     </div>
   );

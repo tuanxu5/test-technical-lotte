@@ -9,7 +9,7 @@ export interface ToastMessage {
   type: 'success' | 'error' | 'warning' | 'info';
 }
 
-type LangType = 'en' | 'vi';
+export type LangType = 'en' | 'vi';
 
 const TRANSLATIONS = {
   en: {

@@ -1,6 +1,8 @@
 import React from 'react';
 import { useApp } from '../context/AppContext';
 import { FileText, Shield, Database, ChevronDown, RotateCcw, X } from 'lucide-react';
+import { SegmentedControl } from './ui/Toggle';
+import type { UserRole } from '../types';
 
 export const Sidebar: React.FC = () => {
   const { userRole, setRole, resetDatabase, isSidebarOpen, setSidebarOpen, currentUser, t } = useApp();
@@ -81,28 +83,17 @@ export const Sidebar: React.FC = () => {
           </div>
 
           {/* Segmented Control Switcher */}
-          <div className="role-segment-selector">
-            <button
-              type="button"
-              className={`role-segment-btn ${userRole === 'ADMIN' ? 'active-admin' : ''}`}
-              onClick={() => {
-                setRole('ADMIN');
-                setSidebarOpen(false);
-              }}
-            >
-              ADMIN
-            </button>
-            <button
-              type="button"
-              className={`role-segment-btn ${userRole === 'STAFF' ? 'active-staff' : ''}`}
-              onClick={() => {
-                setRole('STAFF');
-                setSidebarOpen(false);
-              }}
-            >
-              STAFF
-            </button>
-          </div>
+          <SegmentedControl<UserRole>
+            selectedValue={userRole}
+            onChange={(role) => {
+              setRole(role);
+              setSidebarOpen(false);
+            }}
+            options={[
+              { value: 'ADMIN', label: 'ADMIN', activeClass: 'active-admin' },
+              { value: 'STAFF', label: 'STAFF', activeClass: 'active-staff' },
+            ]}
+          />
         </div>
       </aside>
     </>

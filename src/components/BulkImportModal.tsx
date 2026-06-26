@@ -3,8 +3,11 @@ import React, { useState, useRef } from 'react';
 import { useApp } from '../context/AppContext';
 import { mockApi } from '../services/mockApi';
 import type { Document, DocumentCategory, DocumentStatus, RowValidationError } from '../types';
-import { X, Upload, Download, AlertTriangle } from 'lucide-react';
+import { Upload, Download, AlertTriangle } from 'lucide-react';
 import { VirtualTable } from './VirtualTable';
+import { Modal, ModalHeader } from './ui/Card';
+import { Button } from './ui/Button';
+import { SegmentedControl } from './ui/Toggle';
 
 interface BulkImportModalProps {
   isOpen: boolean;
@@ -303,217 +306,201 @@ export const BulkImportModal: React.FC<BulkImportModalProps> = ({
   };
 
   return (
-    <div className="modal-backdrop fade-in">
-      <div className="modal-content-wrapper modal-import-wrapper" onClick={(e) => e.stopPropagation()}>
-        {/* Modal Header */}
-        <div className="modal-header">
-          <div>
-            <h2>Bulk Import Documents</h2>
-            <p className="modal-subtitle">Upload CSV files containing large registry records with non-blocking processing.</p>
-          </div>
-          <button type="button" className="btn-close-modal" onClick={onClose} disabled={isProcessing || isImporting}>
-            <X size={20} />
-          </button>
-        </div>
+    <Modal isOpen={isOpen} onClose={onClose} wrapperClassName="modal-import-wrapper">
+      <ModalHeader
+        title="Bulk Import Documents"
+        subtitle="Upload CSV files containing large registry records with non-blocking processing."
+        onClose={onClose}
+        disabled={isProcessing || isImporting}
+      />
 
-        <div className="modal-body">
-          {/* Default Uploader State */}
-          {!isProcessing && !hasResults && (
-            <div className="upload-dropzone">
-              <Upload size={48} className="upload-icon-pulse" />
-              <h3>Select EVD CSV File to upload</h3>
-              <p>Drag and drop a <code>.csv</code> file, or click to browse files from your computer.</p>
-              
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept=".csv"
-                onChange={handleFileChange}
-                style={{ display: 'none' }}
-                id="csv-file-picker"
-              />
-              <button
-                type="button"
-                className="btn btn-primary"
-                onClick={() => fileInputRef.current?.click()}
-                style={{ marginTop: 16 }}
-              >
-                Choose File
+      <div className="modal-body">
+        {/* Default Uploader State */}
+        {!isProcessing && !hasResults && (
+          <div className="upload-dropzone">
+            <Upload size={48} className="upload-icon-pulse" />
+            <h3>Select EVD CSV File to upload</h3>
+            <p>Drag and drop a <code>.csv</code> file, or click to browse files from your computer.</p>
+            
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".csv"
+              onChange={handleFileChange}
+              style={{ display: 'none' }}
+              id="csv-file-picker"
+            />
+            <Button
+              variant="primary"
+              onClick={() => fileInputRef.current?.click()}
+              style={{ marginTop: 16 }}
+            >
+              Choose File
+            </Button>
+
+            <div className="dropzone-templates">
+              <button type="button" className="btn-link" onClick={downloadTemplate}>
+                <Download size={14} />
+                <span>Download CSV Template</span>
               </button>
+              <span className="divider">|</span>
+              <button type="button" className="btn-link" onClick={generateLargeMockCSV}>
+                <Download size={14} />
+                <span>Download Large Mock CSV (5,000 Rows)</span>
+              </button>
+            </div>
+          </div>
+        )}
 
-              <div className="dropzone-templates">
-                <button type="button" className="btn-link" onClick={downloadTemplate}>
-                  <Download size={14} />
-                  <span>Download CSV Template</span>
-                </button>
-                <span className="divider">|</span>
-                <button type="button" className="btn-link" onClick={generateLargeMockCSV}>
-                  <Download size={14} />
-                  <span>Download Large Mock CSV (5,000 Rows)</span>
-                </button>
+        {/* Processing State with progress bar */}
+        {isProcessing && (
+          <div className="import-processing-state">
+            <div className="spinner-loader"></div>
+            <h3>Analyzing & Validating EVD Records...</h3>
+            <p>Processing row {processedCount} of {totalCount} records...</p>
+            
+            <div className="progress-bar-wrapper">
+              <div className="progress-bar-fill" style={{ width: `${progress}%` }}></div>
+            </div>
+            <span className="progress-percent">{progress}%</span>
+          </div>
+        )}
+
+        {/* Results Summary and report dashboard */}
+        {hasResults && (
+          <div className="import-results-dashboard">
+            {/* Stat Cards */}
+            <div className="results-summary-cards">
+              <div className="result-card card-total">
+                <div className="val">{totalCount}</div>
+                <div className="lbl">Total Rows</div>
+              </div>
+              <div className="result-card card-valid">
+                <div className="val">{validRecords.length}</div>
+                <div className="lbl">Valid Records</div>
+              </div>
+              <div className="result-card card-invalid">
+                <div className="val">{invalidRecords.length}</div>
+                <div className="lbl">Invalid Rows</div>
               </div>
             </div>
-          )}
 
-          {/* Processing State with progress bar */}
-          {isProcessing && (
-            <div className="import-processing-state">
-              <div className="spinner-loader"></div>
-              <h3>Analyzing & Validating EVD Records...</h3>
-              <p>Processing row {processedCount} of {totalCount} records...</p>
-              
-              <div className="progress-bar-wrapper">
-                <div className="progress-bar-fill" style={{ width: `${progress}%` }}></div>
+            {/* Tab Navigation */}
+            <SegmentedControl
+              className="import-tabs"
+              buttonClassName="tab-btn"
+              selectedValue={activeTab}
+              onChange={(val) => setActiveTab(val as 'valid' | 'invalid')}
+              options={[
+                {
+                  value: 'valid',
+                  label: `Valid Records Preview (${validRecords.length})`,
+                  disabled: validRecords.length === 0,
+                },
+                {
+                  value: 'invalid',
+                  label: `Validation Errors (${invalidRecords.length})`,
+                  disabled: invalidRecords.length === 0,
+                },
+              ]}
+            />
+
+            {/* Tab 1: Valid Records Preview (Virtualized for scale!) */}
+            {activeTab === 'valid' && validRecords.length > 0 && (
+              <div className="import-tab-content">
+                <div className="preview-headers">
+                  <span style={{ width: '20%' }}>Code</span>
+                  <span style={{ width: '50%' }}>Title</span>
+                  <span style={{ width: '15%' }}>Category</span>
+                  <span style={{ width: '15%' }}>Status</span>
+                </div>
+                
+                <VirtualTable
+                  data={validRecords}
+                  rowHeight={40}
+                  visibleHeight={240}
+                  className="virtual-import-preview"
+                  renderRow={(row, idx, style) => (
+                    <div className="preview-row" key={idx} style={style}>
+                      <span style={{ width: '20%' }} className="mono">{row.code}</span>
+                      <span style={{ width: '50%' }} className="truncate" title={row.title}>{row.title}</span>
+                      <span style={{ width: '15%' }}>{row.category}</span>
+                      <span style={{ width: '15%' }}>
+                        <span className={`badge-status status-${row.status.toLowerCase()}`}>{row.status}</span>
+                      </span>
+                    </div>
+                  )}
+                />
               </div>
-              <span className="progress-percent">{progress}%</span>
-            </div>
-          )}
+            )}
 
-          {/* Results Summary and report dashboard */}
-          {hasResults && (
-            <div className="import-results-dashboard">
-              {/* Stat Cards */}
-              <div className="results-summary-cards">
-                <div className="result-card card-total">
-                  <div className="val">{totalCount}</div>
-                  <div className="lbl">Total Rows</div>
+            {/* Tab 2: Invalid Records Report (Virtualized error log!) */}
+            {activeTab === 'invalid' && invalidRecords.length > 0 && (
+              <div className="import-tab-content">
+                <div className="error-headers">
+                  <span style={{ width: '12%' }}>Row #</span>
+                  <span style={{ width: '18%' }}>Code</span>
+                  <span style={{ width: '70%' }}>Validation Failures</span>
                 </div>
-                <div className="result-card card-valid">
-                  <div className="val">{validRecords.length}</div>
-                  <div className="lbl">Valid Records</div>
-                </div>
-                <div className="result-card card-invalid">
-                  <div className="val">{invalidRecords.length}</div>
-                  <div className="lbl">Invalid Rows</div>
-                </div>
+
+                <VirtualTable
+                  data={invalidRecords}
+                  rowHeight={48}
+                  visibleHeight={240}
+                  className="virtual-import-errors"
+                  renderRow={(row, idx, style) => (
+                    <div className="error-row" key={idx} style={style}>
+                      <span style={{ width: '12%' }} className="row-num">#{row.rowNumber}</span>
+                      <span style={{ width: '18%' }} className="mono">{row.code}</span>
+                      <span style={{ width: '70%' }} className="errors-list">
+                        {row.errors.map((err, errIdx) => (
+                          <span key={errIdx} className="err-badge">
+                            <AlertTriangle size={12} style={{ marginRight: 4 }} />
+                            {err}
+                          </span>
+                        ))}
+                      </span>
+                    </div>
+                  )}
+                />
               </div>
-
-              {/* Tab Navigation */}
-              <div className="import-tabs">
-                <button
-                  type="button"
-                  className={`tab-btn ${activeTab === 'valid' ? 'active' : ''}`}
-                  onClick={() => setActiveTab('valid')}
-                  disabled={validRecords.length === 0}
-                >
-                  Valid Records Preview ({validRecords.length})
-                </button>
-                <button
-                  type="button"
-                  className={`tab-btn ${activeTab === 'invalid' ? 'active' : ''}`}
-                  onClick={() => setActiveTab('invalid')}
-                  disabled={invalidRecords.length === 0}
-                >
-                  Validation Errors ({invalidRecords.length})
-                </button>
-              </div>
-
-              {/* Tab 1: Valid Records Preview (Virtualized for scale!) */}
-              {activeTab === 'valid' && validRecords.length > 0 && (
-                <div className="import-tab-content">
-                  <div className="preview-headers">
-                    <span style={{ width: '20%' }}>Code</span>
-                    <span style={{ width: '50%' }}>Title</span>
-                    <span style={{ width: '15%' }}>Category</span>
-                    <span style={{ width: '15%' }}>Status</span>
-                  </div>
-                  
-                  <VirtualTable
-                    data={validRecords}
-                    rowHeight={40}
-                    visibleHeight={240}
-                    className="virtual-import-preview"
-                    renderRow={(row, idx, style) => (
-                      <div className="preview-row" key={idx} style={style}>
-                        <span style={{ width: '20%' }} className="mono">{row.code}</span>
-                        <span style={{ width: '50%' }} className="truncate" title={row.title}>{row.title}</span>
-                        <span style={{ width: '15%' }}>{row.category}</span>
-                        <span style={{ width: '15%' }}>
-                          <span className={`badge-status status-${row.status.toLowerCase()}`}>{row.status}</span>
-                        </span>
-                      </div>
-                    )}
-                  />
-                </div>
-              )}
-
-              {/* Tab 2: Invalid Records Report (Virtualized error log!) */}
-              {activeTab === 'invalid' && invalidRecords.length > 0 && (
-                <div className="import-tab-content">
-                  <div className="error-headers">
-                    <span style={{ width: '12%' }}>Row #</span>
-                    <span style={{ width: '18%' }}>Code</span>
-                    <span style={{ width: '70%' }}>Validation Failures</span>
-                  </div>
-
-                  <VirtualTable
-                    data={invalidRecords}
-                    rowHeight={48}
-                    visibleHeight={240}
-                    className="virtual-import-errors"
-                    renderRow={(row, idx, style) => (
-                      <div className="error-row" key={idx} style={style}>
-                        <span style={{ width: '12%' }} className="row-num">#{row.rowNumber}</span>
-                        <span style={{ width: '18%' }} className="mono">{row.code}</span>
-                        <span style={{ width: '70%' }} className="errors-list">
-                          {row.errors.map((err, errIdx) => (
-                            <span key={errIdx} className="err-badge">
-                              <AlertTriangle size={12} style={{ marginRight: 4 }} />
-                              {err}
-                            </span>
-                          ))}
-                        </span>
-                      </div>
-                    )}
-                  />
-                </div>
-              )}
-            </div>
-          )}
-        </div>
-
-        {/* Modal Footer actions */}
-        <div className="modal-footer">
-          {hasResults && (
-            <button
-              type="button"
-              className="btn btn-secondary"
-              onClick={resetUploader}
-              disabled={isImporting}
-              style={{ marginRight: 'auto' }}
-            >
-              Upload another file
-            </button>
-          )}
-
-          <button
-            type="button"
-            className="btn btn-secondary"
-            onClick={onClose}
-            disabled={isProcessing || isImporting}
-          >
-            Close
-          </button>
-          
-          {hasResults && validRecords.length > 0 && (
-            <button
-              type="button"
-              className="btn btn-primary"
-              onClick={handleImportSubmit}
-              disabled={isImporting}
-            >
-              {isImporting ? (
-                <>
-                  <div className="spinner-loader spinner-small"></div>
-                  <span>Importing...</span>
-                </>
-              ) : (
-                <span>Import {validRecords.length} Valid Rows</span>
-              )}
-            </button>
-          )}
-        </div>
+            )}
+          </div>
+        )}
       </div>
-    </div>
+
+      {/* Modal Footer actions */}
+      <div className="modal-footer">
+        {hasResults && (
+          <Button
+            variant="secondary"
+            onClick={resetUploader}
+            disabled={isImporting}
+            style={{ marginRight: 'auto' }}
+          >
+            Upload another file
+          </Button>
+        )}
+
+        <Button
+          variant="secondary"
+          onClick={onClose}
+          disabled={isProcessing || isImporting}
+        >
+          Close
+        </Button>
+        
+        {hasResults && validRecords.length > 0 && (
+          <Button
+            variant="primary"
+            onClick={handleImportSubmit}
+            loading={isImporting}
+            disabled={isImporting}
+          >
+            Import {validRecords.length} Valid Rows
+          </Button>
+        )}
+      </div>
+    </Modal>
   );
 };

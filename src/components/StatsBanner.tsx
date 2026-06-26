@@ -1,5 +1,6 @@
 import React from 'react';
 import { useApp } from '../context/AppContext';
+import { StatCard } from './ui/Card';
 
 interface StatsProps {
   total: number;
@@ -16,32 +17,16 @@ export const StatsBanner: React.FC<StatsProps> = ({ total, pending, approved, ca
   return (
     <div className="stats-banner">
       {/* Metric 1 */}
-      <div className="stat-card">
-        <div className="stat-value">{total}</div>
-        <div className="stat-label">{t('totalDocs')}</div>
-        <div className="stat-indicator indicator-blue"></div>
-      </div>
+      <StatCard value={total} label={t('totalDocs')} indicatorClass="indicator-blue" />
 
       {/* Metric 2 */}
-      <div className="stat-card">
-        <div className="stat-value">{pending}</div>
-        <div className="stat-label">{t('pendingDocs')}</div>
-        <div className="stat-indicator indicator-yellow"></div>
-      </div>
+      <StatCard value={pending} label={t('pendingDocs')} indicatorClass="indicator-yellow" />
 
       {/* Metric 3 */}
-      <div className="stat-card">
-        <div className="stat-value">{approvedRate}%</div>
-        <div className="stat-label">{t('approvedRate')}</div>
-        <div className="stat-indicator indicator-green"></div>
-      </div>
+      <StatCard value={`${approvedRate}%`} label={t('approvedRate')} indicatorClass="indicator-green" />
 
       {/* Metric 4 */}
-      <div className="stat-card">
-        <div className="stat-value">{categoriesCount}</div>
-        <div className="stat-label">{t('activeCats')}</div>
-        <div className="stat-indicator indicator-purple"></div>
-      </div>
+      <StatCard value={categoriesCount} label={t('activeCats')} indicatorClass="indicator-purple" />
     </div>
   );
 };

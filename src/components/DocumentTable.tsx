@@ -2,7 +2,10 @@
 import React, { useState } from 'react';
 import type { Document } from '../types';
 import { useApp } from '../context/AppContext';
-import { Check, X, Edit2, Trash2, ChevronLeft, ChevronRight, Clock, FileText, AlertCircle } from 'lucide-react';
+import { Check, X, Edit2, Trash2, FileText, AlertCircle } from 'lucide-react';
+import { Table, TableHeader, TableBody, TableRow, TableCell, TableHeaderCell } from './ui/Table';
+import { StatusBadge, CodeBadge } from './ui/Badge';
+import { Pagination } from './ui/Pagination';
 
 interface DocumentTableProps {
   documents: Document[];
@@ -149,92 +152,54 @@ export const DocumentTable: React.FC<DocumentTableProps> = ({
     return currentValue !== originalValue;
   };
 
-  // Get matching status icon
-  const renderStatusBadge = (status: string) => {
-    const statusLower = status.toLowerCase();
-    switch (statusLower) {
-      case 'approved':
-        return (
-          <span className="badge-status status-approved">
-            <Check size={12} style={{ marginRight: 5 }} />
-            {status}
-          </span>
-        );
-      case 'rejected':
-        return (
-          <span className="badge-status status-rejected">
-            <X size={12} style={{ marginRight: 5 }} />
-            {status}
-          </span>
-        );
-      case 'pending':
-        return (
-          <span className="badge-status status-pending">
-            <Clock size={12} style={{ marginRight: 5 }} />
-            {status}
-          </span>
-        );
-      case 'draft':
-      default:
-        return (
-          <span className="badge-status status-draft">
-            <FileText size={12} style={{ marginRight: 5 }} />
-            {status}
-          </span>
-        );
-    }
-  };
-
   // Pagination details
   const totalPages = Math.ceil(totalRecords / pageSize) || 1;
-  const startRecordIndex = (currentPage - 1) * pageSize + 1;
-  const endRecordIndex = Math.min(currentPage * pageSize, totalRecords);
 
   return (
     <div className="table-section-container">
       <div className="table-responsive-wrapper">
-        <table className="sys-table">
-          <thead>
-            <tr>
-              <th style={{ width: '15%' }}>{t('code')}</th>
-              <th style={{ width: '35%' }}>{t('docTitle')}</th>
-              <th style={{ width: '12%' }}>{t('category')}</th>
-              <th style={{ width: '13%' }}>{t('status')}</th>
-              <th style={{ width: '13%' }}>{t('createdBy')}</th>
-              <th style={{ width: '12%' }}>{t('createdDate')}</th>
-              <th style={{ width: '10%', textAlign: 'center' }}>{t('actions')}</th>
-            </tr>
-          </thead>
-          <tbody>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHeaderCell style={{ width: '15%' }}>{t('code')}</TableHeaderCell>
+              <TableHeaderCell style={{ width: '35%' }}>{t('docTitle')}</TableHeaderCell>
+              <TableHeaderCell style={{ width: '12%' }}>{t('category')}</TableHeaderCell>
+              <TableHeaderCell style={{ width: '13%' }}>{t('status')}</TableHeaderCell>
+              <TableHeaderCell style={{ width: '13%' }}>{t('createdBy')}</TableHeaderCell>
+              <TableHeaderCell style={{ width: '12%' }}>{t('createdDate')}</TableHeaderCell>
+              <TableHeaderCell style={{ width: '10%', textAlign: 'center' }}>{t('actions')}</TableHeaderCell>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
             {loading ? (
-              <tr>
-                <td colSpan={7} className="table-loading-state">
+              <TableRow>
+                <TableCell colSpan={7} className="table-loading-state">
                   <div className="spinner-loader"></div>
                   <p>{t('loading')}</p>
-                </td>
-              </tr>
+                </TableCell>
+              </TableRow>
             ) : documents.length === 0 ? (
-              <tr>
-                <td colSpan={7} className="table-empty-state">
+              <TableRow>
+                <TableCell colSpan={7} className="table-empty-state">
                   <div className="empty-icon-box">
                     <FileText size={40} />
                   </div>
                   <h3>{t('emptyState')}</h3>
                   <p>{t('emptyAction')}</p>
-                </td>
-              </tr>
+                </TableCell>
+              </TableRow>
             ) : (
               documents.map((doc) => {
                 const isCurrentRowEditing = editingId === doc.id;
 
                 return (
-                  <tr
+                  <TableRow
                     key={doc.id}
                     className={`${isCurrentRowEditing ? 'row-editing' : ''}`}
                     onDoubleClick={() => !isCurrentRowEditing && startEditing(doc)}
                   >
                     {/* Code Column */}
-                    <td>
+                    <TableCell>
                       {isCurrentRowEditing ? (
                         <div className="cell-input-container">
                           <input
@@ -256,12 +221,12 @@ export const DocumentTable: React.FC<DocumentTableProps> = ({
                           )}
                         </div>
                       ) : (
-                        <span className="mono-code">{doc.code}</span>
+                        <CodeBadge code={doc.code} />
                       )}
-                    </td>
+                    </TableCell>
 
                     {/* Title Column */}
-                    <td>
+                    <TableCell>
                       {isCurrentRowEditing ? (
                         <div className="cell-input-container">
                           <input
@@ -287,10 +252,10 @@ export const DocumentTable: React.FC<DocumentTableProps> = ({
                           {doc.title}
                         </span>
                       )}
-                    </td>
+                    </TableCell>
 
                     {/* Category Column */}
-                    <td>
+                    <TableCell>
                       {isCurrentRowEditing ? (
                         <div className="cell-input-container">
                           <select
@@ -312,10 +277,10 @@ export const DocumentTable: React.FC<DocumentTableProps> = ({
                       ) : (
                         <span className="category-text">{doc.category}</span>
                       )}
-                    </td>
+                    </TableCell>
 
                     {/* Status Column */}
-                    <td>
+                    <TableCell>
                       {isCurrentRowEditing ? (
                         <div className="cell-input-container">
                           <select
@@ -335,22 +300,22 @@ export const DocumentTable: React.FC<DocumentTableProps> = ({
                           )}
                         </div>
                       ) : (
-                        renderStatusBadge(doc.status)
+                        <StatusBadge status={doc.status} />
                       )}
-                    </td>
+                    </TableCell>
 
                     {/* Created By Column */}
-                    <td>
+                    <TableCell>
                       <span className="creator-text">{doc.createdBy}</span>
-                    </td>
+                    </TableCell>
 
                     {/* Created Date Column */}
-                    <td>
+                    <TableCell>
                       <span className="date-text">{formatDate(doc.createdDate)}</span>
-                    </td>
+                    </TableCell>
 
                     {/* Action Column */}
-                    <td>
+                    <TableCell>
                       <div className="actions-cell">
                         {isCurrentRowEditing ? (
                           <>
@@ -396,72 +361,25 @@ export const DocumentTable: React.FC<DocumentTableProps> = ({
                           </>
                         )}
                       </div>
-                    </td>
-                  </tr>
+                    </TableCell>
+                  </TableRow>
                 );
               })
             )}
-          </tbody>
-        </table>
+          </TableBody>
+        </Table>
       </div>
 
       {/* Pagination Footer */}
       {!loading && documents.length > 0 && (
-        <div className="sys-pagination">
-          <div className="pagination-info">
-            Showing <strong>{startRecordIndex}</strong> to <strong>{endRecordIndex}</strong> of{' '}
-            <strong>{totalRecords}</strong> documents
-          </div>
-
-          <div className="pagination-controls">
-            {/* Page Size Selector */}
-            <div className="page-size-selector">
-              <span>Page size:</span>
-              <select
-                value={pageSize}
-                onChange={(e) => onPageSizeChange(Number(e.target.value))}
-                className="select-page-size"
-              >
-                <option value={5}>5</option>
-                <option value={10}>10</option>
-                <option value={15}>15</option>
-                <option value={20}>20</option>
-              </select>
-            </div>
-
-            {/* Navigation buttons */}
-            <div className="page-buttons">
-              <button
-                type="button"
-                className="btn-page-nav"
-                onClick={() => onPageChange(currentPage - 1)}
-                disabled={currentPage === 1}
-              >
-                <ChevronLeft size={16} />
-              </button>
-              
-              {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNumber) => (
-                <button
-                  key={pageNumber}
-                  type="button"
-                  className={`btn-page-num ${pageNumber === currentPage ? 'active' : ''}`}
-                  onClick={() => onPageChange(pageNumber)}
-                >
-                  {pageNumber}
-                </button>
-              ))}
-
-              <button
-                type="button"
-                className="btn-page-nav"
-                onClick={() => onPageChange(currentPage + 1)}
-                disabled={currentPage === totalPages}
-              >
-                <ChevronRight size={16} />
-              </button>
-            </div>
-          </div>
-        </div>
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          totalRecords={totalRecords}
+          pageSize={pageSize}
+          onPageChange={onPageChange}
+          onPageSizeChange={onPageSizeChange}
+        />
       )}
     </div>
   );

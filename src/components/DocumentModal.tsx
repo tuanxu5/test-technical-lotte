@@ -2,7 +2,11 @@
 import React, { useState, useEffect } from 'react';
 import type { Document, DocumentCategory, DocumentStatus } from '../types';
 import { useApp } from '../context/AppContext';
-import { X, AlertTriangle, User } from 'lucide-react';
+import { AlertTriangle, User } from 'lucide-react';
+import { Modal, ModalHeader } from './ui/Card';
+import { Input } from './ui/Input';
+import { Select } from './ui/Select';
+import { Button } from './ui/Button';
 
 interface DocumentModalProps {
   isOpen: boolean;
@@ -46,8 +50,6 @@ export const DocumentModal: React.FC<DocumentModalProps> = ({
     setErrors({});
     setApiError(null);
   }, [documentToEdit, isOpen]);
-
-  if (!isOpen) return null;
 
   // Validation
   const validateForm = (): boolean => {
@@ -99,131 +101,107 @@ export const DocumentModal: React.FC<DocumentModalProps> = ({
   };
 
   return (
-    <div className="modal-backdrop fade-in">
-      <div className="modal-content-wrapper" onClick={(e) => e.stopPropagation()}>
-        {/* Modal Header */}
-        <div className="modal-header">
-          <div>
-            <h2>{documentToEdit ? 'Edit EVD Document' : 'Create New EVD Document'}</h2>
-            <p className="modal-subtitle">
-              {documentToEdit 
-                ? 'Update document metadata and parameters in SYS registry'
-                : 'Register a new document in the Lotte x CMC Global SYS EVD system'}
-            </p>
+    <Modal isOpen={isOpen} onClose={onClose}>
+      <ModalHeader
+        title={documentToEdit ? 'Edit EVD Document' : 'Create New EVD Document'}
+        subtitle={
+          documentToEdit 
+            ? 'Update document metadata and parameters in SYS registry'
+            : 'Register a new document in the Lotte x CMC Global SYS EVD system'
+        }
+        onClose={onClose}
+        disabled={isSubmitting}
+      />
+
+      {/* Form Body */}
+      <form onSubmit={handleSubmit}>
+        <div className="modal-body">
+          {apiError && (
+            <div className="alert-message alert-error">
+              <AlertTriangle size={18} style={{ marginRight: 8, flexShrink: 0 }} />
+              <span>{apiError}</span>
+            </div>
+          )}
+
+          {/* Input Row 1 - Code */}
+          <Input
+            label="Document Code"
+            required
+            type="text"
+            placeholder="e.g., LOTT-EVD-025"
+            value={code}
+            onChange={(e) => setCode(e.target.value)}
+            className="uppercase-text"
+            error={errors.code}
+            hint={!errors.code ? "Unique system identifier. Can only include alphanumeric characters and hyphens." : undefined}
+            disabled={isSubmitting || !!documentToEdit}
+          />
+
+          {/* Input Row 2 - Title */}
+          <Input
+            label="Document Title"
+            required
+            type="text"
+            placeholder="Enter a descriptive title for this document..."
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            error={errors.title}
+            disabled={isSubmitting}
+          />
+
+          {/* Double column grid for select drop-downs */}
+          <div className="form-row-grid">
+            <Select
+              label="Category"
+              value={category}
+              onChange={(e) => setCategory(e.target.value as DocumentCategory)}
+              disabled={isSubmitting}
+              options={[
+                { value: 'Contract', label: 'Contract' },
+                { value: 'Report', label: 'Report' },
+                { value: 'Invoice', label: 'Invoice' },
+                { value: 'Technical', label: 'Technical' },
+              ]}
+            />
+
+            <Select
+              label="Initial Status"
+              value={status}
+              onChange={(e) => setStatus(e.target.value as DocumentStatus)}
+              disabled={isSubmitting}
+              options={[
+                { value: 'Draft', label: 'Draft' },
+                { value: 'Pending', label: 'Pending' },
+                { value: 'Approved', label: 'Approved' },
+                { value: 'Rejected', label: 'Rejected' },
+              ]}
+            />
           </div>
-          <button type="button" className="btn-close-modal" onClick={onClose} disabled={isSubmitting}>
-            <X size={20} />
-          </button>
+
+          {/* Author indicator Info box */}
+          <div className="form-info-box">
+            <User size={16} className="info-box-icon" />
+            <div>
+              <span>Document owner will be registered as: </span>
+              <strong>{documentToEdit ? documentToEdit.createdBy : `${currentUser} (ADMIN)`}</strong>
+            </div>
+          </div>
         </div>
 
-        {/* Form Body */}
-        <form onSubmit={handleSubmit}>
-          <div className="modal-body">
-            {apiError && (
-              <div className="alert-message alert-error">
-                <AlertTriangle size={18} style={{ marginRight: 8, flexShrink: 0 }} />
-                <span>{apiError}</span>
-              </div>
-            )}
-
-            {/* Input Row 1 - Code */}
-            <div className="form-group">
-              <label className="form-label required-field">Document Code</label>
-              <input
-                type="text"
-                placeholder="e.g., LOTT-EVD-025"
-                value={code}
-                onChange={(e) => setCode(e.target.value)}
-                className={`form-input uppercase-text ${errors.code ? 'form-input-error' : ''}`}
-                disabled={isSubmitting || !!documentToEdit} // Lock code if editing
-              />
-              {errors.code ? (
-                <div className="form-error-msg">{errors.code}</div>
-              ) : (
-                <span className="form-hint">Unique system identifier. Can only include alphanumeric characters and hyphens.</span>
-              )}
-            </div>
-
-            {/* Input Row 2 - Title */}
-            <div className="form-group">
-              <label className="form-label required-field">Document Title</label>
-              <input
-                type="text"
-                placeholder="Enter a descriptive title for this document..."
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                className={`form-input ${errors.title ? 'form-input-error' : ''}`}
-                disabled={isSubmitting}
-              />
-              {errors.title && <div className="form-error-msg">{errors.title}</div>}
-            </div>
-
-            {/* Double column grid for select drop-downs */}
-            <div className="form-row-grid">
-              <div className="form-group">
-                <label className="form-label">Category</label>
-                <select
-                  value={category}
-                  onChange={(e) => setCategory(e.target.value as DocumentCategory)}
-                  className="form-select"
-                  disabled={isSubmitting}
-                >
-                  <option value="Contract">Contract</option>
-                  <option value="Report">Report</option>
-                  <option value="Invoice">Invoice</option>
-                  <option value="Technical">Technical</option>
-                </select>
-              </div>
-
-              <div className="form-group">
-                <label className="form-label">Initial Status</label>
-                <select
-                  value={status}
-                  onChange={(e) => setStatus(e.target.value as DocumentStatus)}
-                  className="form-select"
-                  disabled={isSubmitting}
-                >
-                  <option value="Draft">Draft</option>
-                  <option value="Pending">Pending</option>
-                  <option value="Approved">Approved</option>
-                  <option value="Rejected">Rejected</option>
-                </select>
-              </div>
-            </div>
-
-            {/* Author indicator Info box */}
-            <div className="form-info-box">
-              <User size={16} className="info-box-icon" />
-              <div>
-                <span>Document owner will be registered as: </span>
-                <strong>{documentToEdit ? documentToEdit.createdBy : `${currentUser} (ADMIN)`}</strong>
-              </div>
-            </div>
-          </div>
-
-          {/* Modal Actions Footer */}
-          <div className="modal-footer">
-            <button
-              type="button"
-              className="btn btn-secondary"
-              onClick={onClose}
-              disabled={isSubmitting}
-            >
-              Cancel
-            </button>
-            <button type="submit" className="btn btn-primary" disabled={isSubmitting}>
-              {isSubmitting ? (
-                <>
-                  <div className="spinner-loader spinner-small"></div>
-                  <span>Saving...</span>
-                </>
-              ) : (
-                <span>{documentToEdit ? 'Save Changes' : 'Create Document'}</span>
-              )}
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
+        {/* Modal Actions Footer */}
+        <div className="modal-footer">
+          <Button
+            variant="secondary"
+            onClick={onClose}
+            disabled={isSubmitting}
+          >
+            Cancel
+          </Button>
+          <Button type="submit" variant="primary" loading={isSubmitting} disabled={isSubmitting}>
+            {documentToEdit ? 'Save Changes' : 'Create Document'}
+          </Button>
+        </div>
+      </form>
+    </Modal>
   );
 };

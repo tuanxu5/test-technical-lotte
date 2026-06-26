@@ -1,5 +1,5 @@
 import React from 'react';
-import { Check, X, Clock, FileText } from 'lucide-react';
+import { Check, X, Clock, FileText, Shield } from 'lucide-react';
 
 type StatusValue = 'approved' | 'rejected' | 'pending' | 'draft' | string;
 
@@ -51,6 +51,7 @@ export const RoleBadge: React.FC<RoleBadgeProps> = ({ role }) => {
 
   return (
     <span className="role-badge" style={style}>
+      <Shield size={10} style={{ marginRight: 3 }} />
       {role}
     </span>
   );
