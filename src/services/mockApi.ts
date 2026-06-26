@@ -151,7 +151,38 @@ const getStoredDocuments = (): Document[] => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(INITIAL_DOCUMENTS));
     return INITIAL_DOCUMENTS;
   }
-  return JSON.parse(data);
+  try {
+    const docs = JSON.parse(data) as Document[];
+    let hasMigration = false;
+    const migratedDocs = docs.map((doc) => {
+      let category = doc.category;
+      let status = doc.status;
+
+      if (category && category !== (category as string).toUpperCase()) {
+        category = (category as string).toUpperCase() as DOCUMENT_CATEGORY;
+        hasMigration = true;
+      }
+      if (status && status !== (status as string).toUpperCase()) {
+        status = (status as string).toUpperCase() as DOCUMENT_STATUS;
+        hasMigration = true;
+      }
+
+      return {
+        ...doc,
+        category,
+        status,
+      };
+    });
+
+    if (hasMigration) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(migratedDocs));
+      return migratedDocs;
+    }
+    return docs;
+  } catch {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(INITIAL_DOCUMENTS));
+    return INITIAL_DOCUMENTS;
+  }
 };
 
 const saveStoredDocuments = (docs: Document[]): void => {
