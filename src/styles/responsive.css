@@ -1,0 +1,219 @@
+/* ------------------------------------------------------------- */
+/* RESPONSIVE / MOBILE OVERRIDES */
+/* ------------------------------------------------------------- */
+
+/* Sidebar Overlay Backdrop on Mobile */
+.sidebar-mobile-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(15, 23, 42, 0.5);
+  backdrop-filter: blur(4px);
+  z-index: 995;
+}
+
+@media (max-width: 968px) {
+  /* Layout shifts */
+  .app-container {
+    flex-direction: column;
+  }
+
+  .sys-sidebar {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: -320px;
+    /* Hidden offscreen */
+    width: 320px;
+    z-index: 1000;
+    box-shadow: var(--shadow-xl);
+    transform: none;
+  }
+
+  .sys-sidebar.open {
+    left: 0;
+  }
+
+  .btn-close-sidebar-mobile {
+    display: flex;
+    /* Show mobile close */
+  }
+
+  .btn-menu-mobile {
+    display: flex;
+    /* Show hamburger toggle */
+  }
+
+  .sys-header {
+    justify-content: flex-start;
+  }
+
+  .header-actions {
+    margin-left: auto;
+  }
+
+  /* Stats grid collapse to 2 columns */
+  .stats-banner {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  /* Toolbar stacks elements vertically */
+  .sys-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 20px;
+  }
+
+  .filter-group {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+  }
+
+  .search-wrapper {
+    max-width: 100%;
+  }
+
+  .select-wrapper {
+    width: 100%;
+  }
+
+  .filter-select {
+    width: 100%;
+  }
+
+  .btn-clear-filters {
+    justify-content: center;
+  }
+
+  .action-group {
+    justify-content: stretch;
+  }
+
+  .action-group button {
+    flex: 1;
+  }
+
+  /* Results summary grid inside bulk upload modal */
+  .results-summary-cards {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+}
+
+@media (max-width: 640px) {
+  .sys-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+  }
+
+  .btn-menu-mobile {
+    align-self: flex-start;
+  }
+
+  .header-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  /* Stats banner collapses to single column */
+  .stats-banner {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  /* Form modal layout columns */
+  .form-row-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .modal-backdrop {
+    padding: 12px;
+  }
+
+  .modal-header {
+    padding: 24px 24px 18px;
+  }
+
+  .modal-body {
+    padding: 24px;
+    gap: 20px;
+  }
+
+  .modal-footer {
+    padding: 16px 24px;
+  }
+
+  .toast-container {
+    bottom: 16px;
+    right: 16px;
+    left: 16px;
+    width: auto;
+    max-width: none;
+  }
+}
+
+/* ------------------------------------------------------------- */
+/* ANIMATION UTILITIES */
+/* ------------------------------------------------------------- */
+
+.fade-in {
+  animation: fadeIn 0.25s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes modalSlide {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.96);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes toastSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.95);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+@keyframes tooltipFade {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

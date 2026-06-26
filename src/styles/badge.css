@@ -1,0 +1,73 @@
+/* ------------------------------------------------------------- */
+/* BADGE COMPONENTS */
+/* ------------------------------------------------------------- */
+
+/* Status badge pill */
+.badge-status {
+  display: inline-flex;
+  align-items: center;
+  font-size: 10px;
+  font-weight: 800;
+  padding: 6px 14px;
+  border-radius: 20px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: var(--shadow-sm);
+}
+
+.status-draft {
+  background-color: var(--color-draft-bg);
+  color: var(--color-draft);
+}
+
+.status-pending {
+  background-color: var(--color-pending-bg);
+  color: var(--color-pending);
+}
+
+.status-approved {
+  background-color: var(--color-approved-bg);
+  color: var(--color-approved);
+}
+
+.status-rejected {
+  background-color: var(--color-rejected-bg);
+  color: var(--color-rejected);
+}
+
+/* Document code monospace badge */
+.mono-code {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  color: var(--text-primary);
+  font-size: 13px;
+  background-color: var(--bg-body);
+  padding: 6px 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-color);
+  white-space: nowrap;
+  display: inline-block;
+}
+
+/* Role badge (admin / staff) */
+.role-badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 9px;
+  font-weight: 800;
+  padding: 3px 8px;
+  border-radius: 6px;
+  letter-spacing: 0.5px;
+}
+
+/* Error badge (bulk import) */
+.err-badge {
+  display: inline-flex;
+  align-items: center;
+  background-color: var(--color-rejected-bg);
+  color: var(--color-rejected);
+  padding: 4px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 11.5px;
+  font-weight: 600;
+}

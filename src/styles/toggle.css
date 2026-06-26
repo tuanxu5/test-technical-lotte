@@ -1,0 +1,118 @@
+/* ------------------------------------------------------------- */
+/* TOGGLE / SEGMENTED CONTROL */
+/* ------------------------------------------------------------- */
+
+/* Role segmented selector (sidebar) */
+.role-segment-selector {
+  display: flex;
+  background-color: rgba(0, 0, 0, 0.2);
+  padding: 3px;
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.role-segment-btn {
+  flex: 1;
+  background: none;
+  border: none;
+  padding: 10px 0;
+  font-size: 11px;
+  font-weight: 800;
+  color: #475569;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  text-align: center;
+}
+
+.role-segment-btn:hover:not(.active-admin):not(.active-staff) {
+  color: #94a3b8;
+}
+
+.role-segment-btn.active-admin {
+  background-color: var(--lotte-red);
+  color: white;
+  box-shadow: 0 2px 8px rgba(227, 6, 19, 0.25);
+}
+
+.role-segment-btn.active-staff {
+  background-color: var(--cmc-blue);
+  color: white;
+  box-shadow: 0 2px 8px rgba(0, 84, 166, 0.25);
+}
+
+/* Language toggle (header) */
+.lang-switcher {
+  display: flex;
+  align-items: center;
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  padding: 4px;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+}
+
+.lang-globe-icon {
+  margin-left: 10px;
+  margin-right: 8px;
+  color: var(--text-muted);
+}
+
+.lang-btn {
+  background: none;
+  border: none;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 8px 14px;
+  color: var(--text-muted);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.lang-btn.active {
+  background-color: var(--lotte-red);
+  color: white;
+}
+
+/* Import tab toggle */
+.import-tabs {
+  display: flex;
+  border-bottom: 1px solid var(--border-color);
+  gap: 8px;
+}
+
+.tab-btn {
+  background: none;
+  border: none;
+  padding: 14px 28px;
+  font-size: 14.5px;
+  font-weight: 700;
+  color: var(--text-muted);
+  cursor: pointer;
+  position: relative;
+  transition: all 0.2s;
+}
+
+.tab-btn:hover:not(:disabled) {
+  color: var(--text-primary);
+}
+
+.tab-btn.active {
+  color: var(--cmc-blue);
+}
+
+.tab-btn.active::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background-color: var(--cmc-blue);
+}
+
+.tab-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}

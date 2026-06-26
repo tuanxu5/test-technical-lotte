@@ -1,0 +1,132 @@
+/* ------------------------------------------------------------- */
+/* TABLE COMPONENT */
+/* ------------------------------------------------------------- */
+
+.table-section-container {
+  display: flex;
+  flex-direction: column;
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+  width: 100%;
+}
+
+.table-responsive-wrapper {
+  overflow-x: auto;
+  width: 100%;
+  -webkit-overflow-scrolling: touch;
+}
+
+.sys-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.sys-table th {
+  background-color: var(--bg-surface);
+  color: var(--text-muted);
+  font-size: 11.5px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: 24px 28px;
+  border-bottom: 2px solid var(--border-color);
+}
+
+.sys-table td {
+  padding: 20px 28px;
+  font-size: 14.5px;
+  border-bottom: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  position: relative;
+  height: 80px;
+}
+
+.sys-table tbody tr {
+  transition: background-color 0.2s;
+}
+
+.sys-table tbody tr:hover {
+  background-color: var(--bg-surface-hover);
+}
+
+.sys-table tbody tr.row-editing {
+  background-color: var(--color-info-bg) !important;
+}
+
+/* Table cell text styles */
+.doc-title-text {
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.45;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 420px;
+  display: block;
+}
+
+.category-text {
+  font-weight: 600;
+  font-size: 13.5px;
+}
+
+.creator-text {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.date-text {
+  font-size: 13px;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+/* Actions cell alignment */
+.actions-cell {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+/* Empty / Loading States */
+.table-loading-state,
+.table-empty-state {
+  text-align: center;
+  padding: 80px 28px !important;
+}
+
+.table-loading-state p {
+  margin-top: 16px;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.empty-icon-box {
+  width: 80px;
+  height: 80px;
+  background-color: var(--bg-body);
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 24px;
+  color: var(--text-light);
+  border: 1px solid var(--border-color);
+}
+
+.table-empty-state h3 {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+
+.table-empty-state p {
+  font-size: 14.5px;
+  color: var(--text-muted);
+}

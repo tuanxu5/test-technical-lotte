@@ -1,0 +1,85 @@
+/* ------------------------------------------------------------- */
+/* PAGINATION COMPONENT */
+/* ------------------------------------------------------------- */
+
+.sys-pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24px 28px;
+  background-color: var(--bg-surface);
+  border-top: 1px solid var(--border-color);
+  flex-wrap: wrap;
+  gap: 16px;
+  width: 100%;
+}
+
+.pagination-info {
+  font-size: 14px;
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+.pagination-controls {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.page-size-selector {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13.5px;
+  color: var(--text-secondary);
+  font-weight: 700;
+}
+
+.page-buttons {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.btn-page-nav,
+.btn-page-num {
+  height: 38px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-color);
+  background-color: var(--bg-surface);
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.btn-page-nav {
+  width: 38px;
+}
+
+.btn-page-num {
+  min-width: 38px;
+  padding: 0 10px;
+}
+
+.btn-page-nav:hover:not(:disabled),
+.btn-page-num:hover:not(.active) {
+  background-color: var(--bg-surface-hover);
+  color: var(--text-primary);
+}
+
+.btn-page-num.active {
+  background-color: var(--lotte-red);
+  color: white;
+  border-color: var(--lotte-red);
+}
+
+.btn-page-nav:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}

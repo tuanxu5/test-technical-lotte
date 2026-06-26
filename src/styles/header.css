@@ -1,0 +1,112 @@
+/* ------------------------------------------------------------- */
+/* HEADER COMPONENT */
+/* ------------------------------------------------------------- */
+
+.sys-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+  width: 100%;
+}
+
+.btn-menu-mobile {
+  display: none;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  padding: 12px;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-menu-mobile:hover {
+  background-color: var(--bg-surface-hover);
+}
+
+.header-meta h1 {
+  font-size: 32px;
+  font-weight: 800;
+  color: var(--text-primary);
+  letter-spacing: -0.75px;
+  line-height: 1.2;
+}
+
+.header-meta .subtitle {
+  font-size: 14.5px;
+  color: var(--text-muted);
+  margin-top: 6px;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+/* Profile identity card */
+.user-profile-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  padding: 10px 20px;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+.avatar-placeholder {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--lotte-red), var(--cmc-blue));
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13.5px;
+  font-weight: 800;
+}
+
+.user-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.user-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+/* ------------------------------------------------------------- */
+/* TOOLBAR COMPONENT */
+/* ------------------------------------------------------------- */
+
+.sys-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 28px;
+  width: 100%;
+  flex-wrap: wrap;
+}
+
+.filter-group {
+  display: flex;
+  align-items: flex-end;
+  gap: 20px;
+  flex-wrap: wrap;
+  flex: 1;
+}
+
+.action-group {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
