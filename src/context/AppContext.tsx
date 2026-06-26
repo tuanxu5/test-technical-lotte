@@ -44,6 +44,15 @@ const TRANSLATIONS = {
     pendingDocs: 'Pending Reviews',
     approvedRate: 'Approved Rate',
     activeCats: 'Active Categories',
+    
+    // Sidebar
+    sidebarRegistryTitle: 'EVD File Module',
+    sidebarRegistryLink: 'Documents Registry',
+    sidebarManagementTitle: 'Management',
+    sidebarAccessControl: 'Access Controls',
+    sidebarAuditLogs: 'System Audit Logs',
+    sidebarRoleScope: 'Scope',
+    sidebarResetDb: 'Reset Demo Database',
   },
   vi: {
     title: 'Quản lý tài liệu EVD',
@@ -77,6 +86,15 @@ const TRANSLATIONS = {
     pendingDocs: 'Chờ duyệt',
     approvedRate: 'Tỷ lệ đã duyệt',
     activeCats: 'Danh mục hoạt động',
+
+    // Sidebar
+    sidebarRegistryTitle: 'Phân hệ EVD',
+    sidebarRegistryLink: 'Sổ đăng ký tài liệu',
+    sidebarManagementTitle: 'Quản trị hệ thống',
+    sidebarAccessControl: 'Kiểm soát truy cập',
+    sidebarAuditLogs: 'Lịch sử hệ thống',
+    sidebarRoleScope: 'Quyền',
+    sidebarResetDb: 'Khôi phục dữ liệu mẫu',
   }
 };
 
@@ -104,7 +122,9 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const [currentUser, setCurrentUser] = useState<string>('Admin User');
   const [toasts, setToasts] = useState<ToastMessage[]>([]);
   const [triggerRefresh, setTriggerRefresh] = useState<boolean>(false);
-  const [lang, setLangState] = useState<LangType>('en');
+  const [lang, setLangState] = useState<LangType>(
+    () => (localStorage.getItem('sys_lang') as LangType) || 'en'
+  );
   const [isSidebarOpen, setSidebarOpen] = useState<boolean>(false);
 
   const setRole = useCallback((role: UserRole) => {
@@ -119,6 +139,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
   const setLang = useCallback((newLang: LangType) => {
     setLangState(newLang);
+    localStorage.setItem('sys_lang', newLang);
   }, []);
 
   const t = useCallback((key: keyof typeof TRANSLATIONS['en']): string => {

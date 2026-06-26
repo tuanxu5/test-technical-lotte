@@ -3,7 +3,7 @@ import { useApp } from '../context/AppContext';
 import { FileText, Shield, Database, ChevronDown, RotateCcw, X } from 'lucide-react';
 
 export const Sidebar: React.FC = () => {
-  const { userRole, setRole, resetDatabase, isSidebarOpen, setSidebarOpen, currentUser } = useApp();
+  const { userRole, setRole, resetDatabase, isSidebarOpen, setSidebarOpen, currentUser, t } = useApp();
 
   return (
     <>
@@ -36,21 +36,21 @@ export const Sidebar: React.FC = () => {
 
         {/* Navigation Section */}
         <nav className="sidebar-nav">
-          <div className="nav-section-title">EVD Registry</div>
+          <div className="nav-section-title">{t('sidebarRegistryTitle')}</div>
           <a href="#" className="nav-item active" onClick={() => setSidebarOpen(false)}>
             <FileText size={16} />
-            <span>Documents Registry</span>
+            <span>{t('sidebarRegistryLink')}</span>
             <span className="nav-active-dot" />
           </a>
           
-          <div className="nav-section-title">Management</div>
+          <div className="nav-section-title">{t('sidebarManagementTitle')}</div>
           <a href="#" className="nav-item disabled" onClick={(e) => e.preventDefault()}>
             <Shield size={16} />
-            <span>Access Controls</span>
+            <span>{t('sidebarAccessControl')}</span>
           </a>
           <a href="#" className="nav-item disabled" onClick={(e) => e.preventDefault()}>
             <Database size={16} />
-            <span>System Audit Logs</span>
+            <span>{t('sidebarAuditLogs')}</span>
           </a>
         </nav>
 
@@ -63,7 +63,7 @@ export const Sidebar: React.FC = () => {
             </div>
             <div className="sidebar-user-info">
               <div className="user-name">{currentUser}</div>
-              <div className="user-role-label">{userRole} Scope</div>
+              <div className="user-role-label">{userRole} {t('sidebarRoleScope')}</div>
             </div>
             
             {/* Subtle seed reset action */}
@@ -74,7 +74,7 @@ export const Sidebar: React.FC = () => {
                 resetDatabase();
                 setSidebarOpen(false);
               }}
-              title="Restore demo seeds"
+              title={t('sidebarResetDb')}
             >
               <RotateCcw size={14} />
             </button>

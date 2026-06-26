@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any, react-hooks/set-state-in-effect */
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { AppProvider, useApp } from './context/AppContext';
 import { Sidebar } from './components/Sidebar';
 import { Header } from './components/Header';
@@ -82,27 +82,39 @@ const DashboardContent: React.FC = () => {
   const [documentToDelete, setDocumentToDelete] = useState<Document | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
-  // Fetch documents matching filters & pagination parameters
-  const fetchDocs = useCallback(async () => {
-    setLoading(true);
-    try {
-      const response = await mockApi.getDocuments({
-        page: currentPage,
-        limit: pageSize,
-        search,
-        category,
-        status,
-        userRole,
-        currentUser,
-      });
-      setDocuments(response.data);
-      setTotalRecords(response.total);
-    } catch (error: any) {
-      showToast(error.message || 'Failed to fetch documents', 'error');
-    } finally {
-      setLoading(false);
-    }
-  }, [currentPage, pageSize, search, category, status, userRole, currentUser, showToast]);
+  // Keep showToast ref stable so it doesn't appear in effect deps
+  const showToastRef = useRef(showToast);
+  useEffect(() => { showToastRef.current = showToast; }, [showToast]);
+
+  // Fetch documents — single effect watching all params, no stale closure
+  useEffect(() => {
+    let cancelled = false;
+    const run = async () => {
+      setLoading(true);
+      try {
+        const response = await mockApi.getDocuments({
+          page: currentPage,
+          limit: pageSize,
+          search,
+          category,
+          status,
+          userRole,
+          currentUser,
+        });
+        if (!cancelled) {
+          setDocuments(response.data);
+          setTotalRecords(response.total);
+        }
+      } catch (error: any) {
+        if (!cancelled) showToastRef.current(error.message || 'Failed to fetch documents', 'error');
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    };
+    run();
+    return () => { cancelled = true; };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentPage, pageSize, search, category, status, userRole, currentUser, triggerRefresh]);
 
   // Compute live KPIs metrics matching active role scope
   const calculateMetrics = useCallback(async () => {
@@ -135,40 +147,37 @@ const DashboardContent: React.FC = () => {
     }
   }, [userRole, currentUser]);
 
-  // Sync fetching on triggers
-  useEffect(() => {
-    fetchDocs();
-  }, [fetchDocs, triggerRefresh]);
-
   // Sync stats calculations
   useEffect(() => {
     calculateMetrics();
   }, [calculateMetrics, triggerRefresh]);
 
   // Reset to first page when search filters change
-  const handleSearchChange = (val: string) => {
+  // Must be useCallback so Toolbar's debounce dep doesn't re-fire on every render
+  const handleSearchChange = useCallback((val: string) => {
     setSearch(val);
     setCurrentPage(1);
-  };
+  }, []);
 
-  const handleCategoryChange = (val: DocumentCategory | 'ALL') => {
+  const handleCategoryChange = useCallback((val: DocumentCategory | 'ALL') => {
     setCategory(val);
     setCurrentPage(1);
-  };
+  }, []);
 
-  const handleStatusChange = (val: DocumentStatus | 'ALL') => {
+  const handleStatusChange = useCallback((val: DocumentStatus | 'ALL') => {
     setStatus(val);
     setCurrentPage(1);
-  };
+  }, []);
 
-  const handlePageChange = (page: number) => {
+  const handlePageChange = useCallback((page: number) => {
     setCurrentPage(page);
-  };
+  }, []);
 
-  const handlePageSizeChange = (size: number) => {
+  const handlePageSizeChange = useCallback((size: number) => {
     setPageSize(size);
     setCurrentPage(1);
-  };
+  }, []);
+
 
   // Add Document handler
   const handleSaveDocument = async (docPayload: Omit<Document, 'id' | 'createdDate'>) => {
